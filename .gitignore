@@ -1,0 +1,24 @@
+# Local runtimes and generated state
+.venv*/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+.DS_Store
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.sqlite*
+*.db
+*.db-*
+*.log
+*.zip
+models/
+data/
+uploads/
+artifacts/
+image.lock
+cpu-runtime.constraints
+requirements.installed.lock
+version-record*/

@@ -1,0 +1,16 @@
+[Unit]
+Description=RAG Upload API (lab)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/rag-lab/rag-upload-lab
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/root/rag-lab/.venv-ingest/bin/python -m uvicorn app:app --host 127.0.0.1 --port 8088 --workers 1
+Restart=on-failure
+RestartSec=5
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

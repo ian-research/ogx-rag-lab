@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1280" viewBox="0 0 1200 1280"><rect width="100%" height="100%" fill="#f5f7fb"/>
+<text x="60" y="70" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="40" fill="#24334b">文件上传之后：后台如何处理</text>
+<text x="60" y="114" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="26" fill="#24334b">持久任务队列 · 一个 Worker · 完成后才能检索</text>
+<rect x="60" y="155" width="630" height="130" rx="18" fill="#eaf3ff" stroke="#b6c4d9" stroke-width="2"/>
+<text x="84" y="199" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">queued · 已排队</text>
+<text x="84" y="237" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">原件落盘，等待 Worker 领取</text>
+<line x1="375" y1="285" x2="375" y2="330" stroke="#58729a" stroke-width="4"/><polygon points="375,330 368.47551698833155,316.49329346470984 381.52448301166845,316.49329346470984" fill="#58729a"/>
+<rect x="60" y="335" width="630" height="130" rx="18" fill="#eaf3ff" stroke="#b6c4d9" stroke-width="2"/>
+<text x="84" y="379" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">parsing · 解析</text>
+<text x="84" y="417" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">提取正文 / 表格 / OCR 文本</text>
+<line x1="375" y1="465" x2="375" y2="510" stroke="#58729a" stroke-width="4"/><polygon points="375,510 368.47551698833155,496.49329346470984 381.52448301166845,496.49329346470984" fill="#58729a"/>
+<rect x="60" y="515" width="630" height="130" rx="18" fill="#eaf3ff" stroke="#b6c4d9" stroke-width="2"/>
+<text x="84" y="559" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">chunking · 分块</text>
+<text x="84" y="597" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">保留标题，冻结 chunks.json</text>
+<line x1="375" y1="645" x2="375" y2="690" stroke="#58729a" stroke-width="4"/><polygon points="375,690 368.47551698833155,676.4932934647098 381.52448301166845,676.4932934647098" fill="#58729a"/>
+<rect x="60" y="695" width="630" height="130" rx="18" fill="#eaf3ff" stroke="#b6c4d9" stroke-width="2"/>
+<text x="84" y="739" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">embedding · 向量化与写入</text>
+<text x="84" y="777" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">批量生成向量并写入 OGX</text>
+<line x1="375" y1="825" x2="375" y2="870" stroke="#58729a" stroke-width="4"/><polygon points="375,870 368.47551698833155,856.4932934647098 381.52448301166845,856.4932934647098" fill="#58729a"/>
+<rect x="60" y="875" width="630" height="130" rx="18" fill="#eaf7ef" stroke="#b6c4d9" stroke-width="2"/>
+<text x="84" y="919" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">ready · 可检索</text>
+<text x="84" y="957" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">全部写入成功，问答端可选用</text>
+<rect x="760" y="380" width="380" height="205" rx="18" fill="#fff0e9" stroke="#b6c4d9" stroke-width="2"/>
+<text x="784" y="424" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">failed · 失败</text>
+<text x="784" y="462" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">记录错误与任务日志</text>
+<text x="784" y="498" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">用户触发重试</text>
+<text x="784" y="534" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">重新排队</text>
+<line x1="690" y1="565" x2="755" y2="500" stroke="#58729a" stroke-width="4"/><polygon points="755,500 750.0628223986869,514.1641899638876 740.8358100361124,504.9371776013131" fill="#58729a"/>
+<text x="760" y="643" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="23" fill="#24334b">解析 / 分块 / 写入异常</text>
+<text x="760" y="681" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="23" fill="#24334b">或任务超时均可能失败</text>
+<polyline points="950,380 950,220 695,220" fill="none" stroke="#58729a" stroke-width="4"/>
+<line x1="950" y1="220" x2="695" y2="220" stroke="#58729a" stroke-width="4"/><polygon points="695,220 708.5067065352902,213.47551698833155 708.5067065352902,226.52448301166845" fill="#58729a"/>
+<text x="770" y="193" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="23" fill="#24334b">重试 → queued</text>
+<text x="60" y="1105" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="25" fill="#24334b">重试优先复用冻结片段和已登记的库，不等于重新解析。</text>
+<text x="60" y="1149" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">Worker 重启恢复中断任务；本图是流程说明，不是性能测量。</text>
+<text x="60" y="1193" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="23" fill="#24334b">归档：2026-10-27｜已成功文档的重新解析使用独立重建任务。</text>
+</svg>

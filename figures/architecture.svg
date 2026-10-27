@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="1280" viewBox="0 0 1200 1280"><rect width="100%" height="100%" fill="#f5f7fb"/>
+<text x="60" y="70" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="40" fill="#24334b">一台服务器上的标准 RAG</text>
+<text x="60" y="110" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="25" fill="#24334b">AWS · RHEL 10 · 单张 L40S｜入库与问答分开处理</text>
+<rect x="60" y="140" width="1080" height="115" rx="18" fill="#ffffff" stroke="#b6c4d9" stroke-width="2"/>
+<text x="84" y="184" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">浏览器 → SSH 隧道 → 上传应用 API :8088</text>
+<text x="84" y="222" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">上传文件、查看任务状态、选择文档、提交问题</text>
+<line x1="320" y1="255" x2="320" y2="320" stroke="#58729a" stroke-width="4"/><polygon points="320,320 313.47551698833155,306.49329346470984 326.52448301166845,306.49329346470984" fill="#58729a"/>
+<line x1="880" y1="255" x2="880" y2="320" stroke="#58729a" stroke-width="4"/><polygon points="880,320 873.4755169883315,306.49329346470984 886.5244830116685,306.49329346470984" fill="#58729a"/>
+<rect x="60" y="320" width="520" height="210" rx="18" fill="#eaf3ff" stroke="#b6c4d9" stroke-width="2"/>
+<text x="84" y="364" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">入库路径：独立 CPU Worker</text>
+<text x="84" y="402" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">原件 → 解析 / OCR → Chunk</text>
+<text x="84" y="438" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">SQLite 记录任务；片段落盘</text>
+<text x="84" y="474" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">全部写入成功后标记 ready</text>
+<rect x="620" y="320" width="520" height="210" rx="18" fill="#eaf7ef" stroke="#b6c4d9" stroke-width="2"/>
+<text x="644" y="364" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">问答路径：应用固定流程</text>
+<text x="644" y="402" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">确定文件范围 → 检索证据</text>
+<text x="644" y="438" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">证据 + 问题 → 生成答案</text>
+<text x="644" y="474" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">返回引用；不运行 Agent 循环</text>
+<line x1="320" y1="530" x2="320" y2="620" stroke="#58729a" stroke-width="4"/><polygon points="320,620 313.47551698833155,606.4932934647098 326.52448301166845,606.4932934647098" fill="#58729a"/>
+<line x1="880" y1="530" x2="880" y2="620" stroke="#58729a" stroke-width="4"/><polygon points="880,620 873.4755169883315,606.4932934647098 886.5244830116685,606.4932934647098" fill="#58729a"/>
+<text x="95" y="580" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="23" fill="#24334b">写入片段 / 向量</text>
+<text x="685" y="580" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="23" fill="#24334b">检索 / 生成请求</text>
+<rect x="60" y="620" width="1080" height="165" rx="18" fill="#edf0ff" stroke="#b6c4d9" stroke-width="2"/>
+<text x="84" y="664" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">OGX :8321 统一接入层</text>
+<text x="84" y="702" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">inference：生成与 Embedding；vector_io：入库与检索</text>
+<text x="84" y="738" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">自建上传应用调用 OGX；本实验未启用 OGX Files API</text>
+<line x1="230" y1="785" x2="230" y2="865" stroke="#58729a" stroke-width="4"/><polygon points="230,865 223.47551698833155,851.4932934647098 236.52448301166845,851.4932934647098" fill="#58729a"/>
+<line x1="600" y1="785" x2="600" y2="865" stroke="#58729a" stroke-width="4"/><polygon points="600,865 593.4755169883315,851.4932934647098 606.5244830116685,851.4932934647098" fill="#58729a"/>
+<line x1="970" y1="785" x2="970" y2="865" stroke="#58729a" stroke-width="4"/><polygon points="970,865 963.4755169883315,851.4932934647098 976.5244830116685,851.4932934647098" fill="#58729a"/>
+<rect x="60" y="865" width="340" height="180" rx="18" fill="#ffffff" stroke="#b6c4d9" stroke-width="2"/>
+<text x="84" y="909" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">BGE · CPU</text>
+<text x="84" y="947" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">512 维向量</text>
+<text x="84" y="983" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">文档 / 查询 Embedding</text>
+<text x="84" y="1019" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">独立于生成模型</text>
+<rect x="430" y="865" width="340" height="180" rx="18" fill="#ffffff" stroke="#b6c4d9" stroke-width="2"/>
+<text x="454" y="909" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">PostgreSQL</text>
+<text x="454" y="947" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">Podman · pgvector</text>
+<text x="454" y="983" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">:5432 持久化向量</text>
+<text x="454" y="1019" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">每个文档任务一个库</text>
+<rect x="800" y="865" width="340" height="180" rx="18" fill="#ffffff" stroke="#b6c4d9" stroke-width="2"/>
+<text x="824" y="909" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="29" fill="#24334b">vLLM · GPU</text>
+<text x="824" y="947" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">L40S 上运行生成模型</text>
+<text x="824" y="983" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">:8000 / rag-llm</text>
+<text x="824" y="1019" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">OGX 转发生成请求</text>
+<text x="60" y="1116" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="26" fill="#24334b">服务端均监听本机；浏览器经隧道访问。</text>
+<text x="60" y="1159" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="24" fill="#24334b">单用户实验：无登录 / ACL、正式版本发布和并发能力验收。</text>
+<text x="60" y="1203" font-family="Hiragino Sans GB,Microsoft YaHei,sans-serif" font-size="23" fill="#24334b">归档：2026-10-27｜此图描述当前实现，不表示生产就绪。</text>
+</svg>

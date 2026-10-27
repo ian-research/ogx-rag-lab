@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>企业知识入库实验</title>
+<style>
+body{font:16px/1.6 system-ui,sans-serif;background:#f4f6f9;color:#24324a;margin:0}main{max-width:1100px;margin:40px auto;padding:0 20px}h1{margin-bottom:4px}p{color:#56657c}.panel{background:white;border:1px solid #dce2eb;border-radius:12px;padding:22px;margin:20px 0}button{border:0;border-radius:6px;background:#2459c5;color:white;padding:9px 16px;cursor:pointer}button:disabled{opacity:.5;cursor:wait}input[type=text]{box-sizing:border-box;padding:12px;border:1px solid #b8c5d6;border-radius:6px;width:100%;margin-bottom:12px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;padding:10px;border-bottom:1px solid #e4e8ef;vertical-align:top}td button,td a{margin:3px;font-size:13px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f7f9fc;padding:16px;border-radius:8px}small{color:#65728a}#notice{white-space:pre-wrap;color:#34496d}.tablewrap{overflow-x:auto}.error{color:#ad2335}a{color:#2459c5}
+</style></head><body><main>
+<h1>企业知识入库实验</h1><p>上传文档，查看处理进度，再用问题验证检索与引用。</p>
+<small id="health">正在检查后台处理服务…</small>
+<section class="panel"><h2>1 · 上传文件</h2>
+<p>PDF、Markdown、UTF-8 TXT、DOCX；旧版 DOC 需要服务器安装 LibreOffice。每个文件最多 50 MiB。</p>
+<input id="files" type="file" multiple accept=".pdf,.md,.txt,.docx,.doc"> <button id="upload">上传并入库</button>
+<p id="notice" role="status"></p></section>
+<section class="panel"><h2>2 · 文档与处理状态</h2><p>页面每 3 秒刷新。入库完成后可查看分块；失败任务可重试。</p>
+<div class="tablewrap"><table><thead><tr><th>检索选择</th><th>文件</th><th>状态 / 进度</th><th>操作</th></tr></thead><tbody id="jobs"></tbody></table></div>
+<details id="preview"><summary>处理详情 / 片段预览</summary><pre id="chunks">点击文档的“查看分块”或“错误详情”。</pre></details></section>
+<section class="panel"><h2>3 · 检索问答</h2><p>勾选文档可限定检索范围；不勾选时检索所有文件的最新成功版本，最多 20 个文件。</p>
+<input id="question" type="text" maxlength="300" value="申请软件许可证需要谁审批？">
+<button id="ask">提问</button><pre id="answer">回答和来源将显示在这里。</pre></section>
+</main><script>
+const $=id=>document.getElementById(id); const selected=new Set();
+const statuses={queued:'排队中',parsing:'解析 / OCR',chunking:'分块中',embedding:'向量化 / 入库',ready:'可检索',failed:'失败'};
+async function api(url,options){const response=await fetch(url,options);const data=await response.json();if(!response.ok)throw Error(typeof data.detail==='string'?data.detail:JSON.stringify(data));return data;}
+function preview(value){$('chunks').textContent=typeof value==='string'?value:JSON.stringify(value,null,2);$('preview').open=true;}
+async function refresh(){
+ try{const health=await api('/api/health');$('health').textContent=health.worker_alive?'后台处理服务：运行中':'后台处理服务：未检测到心跳，上传任务将等待 Worker 启动';
+ const jobs=await api('/api/documents');$('jobs').replaceChildren();
+ for(const job of jobs){const tr=document.createElement('tr');const cells=Array.from({length:4},()=>document.createElement('td'));cells.forEach(c=>tr.append(c));
+ const check=document.createElement('input');check.type='checkbox';check.disabled=job.status!=='ready';check.checked=selected.has(job.id);check.onchange=()=>check.checked?selected.add(job.id):selected.delete(job.id);cells[0].append(check);
+ const title=document.createElement('div');title.textContent=job.filename;const date=document.createElement('small');date.textContent=new Date(job.created*1000).toLocaleString();cells[1].append(title,date);
+ cells[2].textContent=(statuses[job.status]||job.status)+(job.total?' · '+job.done+'/'+job.total:'');
+ const add=(label,handler)=>{const b=document.createElement('button');b.textContent=label;b.onclick=async()=>{try{await handler();}catch(e){preview(e.message);}};cells[3].append(b);};
+ add('查看分块',async()=>preview(await api('/api/documents/'+job.id+'/chunks')));
+ const a=document.createElement('a');a.textContent='下载原件';a.href='/api/documents/'+job.id+'/file';cells[3].append(a);
+ if(job.status==='failed'){add('错误详情',()=>preview(job.error||'未知错误'));add('重试',async()=>{await api('/api/documents/'+job.id+'/retry',{method:'POST'});await refresh();});}
+ $('jobs').append(tr);}
+ }catch(e){$('health').textContent='服务连接失败：'+e.message;}
+}
+$('upload').onclick=async()=>{const files=[...$('files').files];if(!files.length){$('notice').textContent='请先选择文件。';return;}$('upload').disabled=true;const messages=[];
+ try{for(const file of files){if(file.size>50*1024*1024){messages.push(file.name+'：超过 50 MiB');continue;}const form=new FormData();form.append('file',file);
+ try{const job=await api('/api/documents',{method:'POST',body:form});messages.push(file.name+'：'+(job.deduplicated?'已存在，当前状态 '+statuses[job.status]:'已提交后台处理'));}catch(e){messages.push(file.name+'：'+e.message);}$('notice').textContent=messages.join('\n');}await refresh();}finally{$('upload').disabled=false;}};
+$('ask').onclick=async()=>{$('ask').disabled=true;$('answer').textContent='检索并生成回答中…';try{const body={question:$('question').value};if(selected.size)body.document_ids=[...selected];const data=await api('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+ $('answer').textContent=data.answer+'\n\n'+data.sources.map(s=>'['+s.number+'] '+s.source+' · '+(s.page?'页 '+s.page+' · ':'')+'结构块 '+s.block+'\n'+s.text).join('\n\n')+(data.finish_reason==='length'?'\n\n注意：回答可能被截断。':'');}catch(e){$('answer').textContent=e.message;}finally{$('ask').disabled=false;}};
+refresh();setInterval(refresh,3000);
+</script></body></html>

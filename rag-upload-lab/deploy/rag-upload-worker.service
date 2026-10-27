@@ -1,0 +1,20 @@
+[Unit]
+Description=RAG Document Worker (lab CPU)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/root/rag-lab/rag-upload-lab
+Environment=PYTHONUNBUFFERED=1
+Environment=CUDA_VISIBLE_DEVICES=
+Environment=OMP_NUM_THREADS=4
+Environment=RAG_TASK_TIMEOUT=3600
+ExecStart=/root/rag-lab/.venv-ingest/bin/python -u worker.py
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

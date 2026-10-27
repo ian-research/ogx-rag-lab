@@ -1,0 +1,62 @@
+# 根据本次已跑通配置整理的参考文件；不是服务器配置的逐字导出。
+version: 2
+distro_name: rag-lab
+apis:
+  - inference
+  - vector_io
+providers:
+  inference:
+    - provider_id: local-vllm
+      provider_type: remote::vllm
+      config:
+        base_url: http://127.0.0.1:8000/v1
+        max_tokens: 1024
+    - provider_id: cpu-embedding
+      provider_type: inline::sentence-transformers
+      config:
+        trust_remote_code: false
+  vector_io:
+    - provider_id: local-pgvector
+      provider_type: remote::pgvector
+      config:
+        host: 127.0.0.1
+        port: 5432
+        db: rag
+        user: rag_app
+        password: ${env.PGVECTOR_PASSWORD}
+        distance_metric: COSINE
+        persistence:
+          backend: kv_default
+          namespace: vector_io::pgvector
+storage:
+  backends:
+    kv_default:
+      type: kv_sqlite
+      db_path: /root/rag-lab/ogx/data/kvstore.db
+    sql_default:
+      type: sql_sqlite
+      db_path: /root/rag-lab/ogx/data/sql_store.db
+  stores:
+    metadata:
+      namespace: registry
+      backend: kv_default
+    inference:
+      table_name: inference_store
+      backend: sql_default
+registered_resources:
+  models:
+    - model_id: rag-llm
+      provider_id: local-vllm
+      provider_model_id: rag-llm
+      model_type: llm
+      metadata: {}
+    - model_id: bge-small-zh
+      provider_id: cpu-embedding
+      provider_model_id: /root/rag-lab/models/bge-small-zh-v1.5
+      model_type: embedding
+      metadata:
+        embedding_dimension: 512
+server:
+  host: 127.0.0.1
+  port: 8321
+  insecure: true

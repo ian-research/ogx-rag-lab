@@ -1,0 +1,22 @@
+[Unit]
+Description=RAG vLLM generation server
+After=network-online.target
+Wants=network-online.target
+PartOf=rag-stack.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=/root/rag-lab
+EnvironmentFile=/etc/rag-lab/vllm.env
+Environment=PATH=/root/rag-lab/.venv-vllm/bin:/usr/local/cuda-13.3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+ExecStart=/bin/bash /root/rag-lab/ogx-rag-lab/scripts/start-vllm.sh
+ExecStartPost=/usr/bin/python3 /root/rag-lab/ogx-rag-lab/scripts/wait-ready.py vllm --timeout 900
+TimeoutStartSec=960
+TimeoutStopSec=90
+Restart=on-failure
+RestartSec=15
+UMask=0077
+
+[Install]
+WantedBy=rag-stack.target

@@ -1,0 +1,7 @@
+[Unit]
+Description=RAG version-management stack (phase 2, isolated)
+Requires=rag-version-worker.service rag-version-api.service
+After=rag-version-worker.service rag-version-api.service
+
+[Install]
+WantedBy=multi-user.target

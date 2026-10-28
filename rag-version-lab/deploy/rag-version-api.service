@@ -1,0 +1,24 @@
+[Unit]
+Description=RAG version-management API (phase 2, port 8089)
+After=network-online.target rag-ogx.service
+Requires=rag-ogx.service rag-version-worker.service
+After=rag-version-worker.service
+PartOf=rag-version.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=/root/rag-lab/rag-version-lab
+EnvironmentFile=/etc/rag-lab/ogx.env
+Environment=VERSION_DATA_DIR=/root/rag-lab/rag-version-lab/data
+Environment=PATH=/root/rag-lab/.venv-ingest/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+ExecStart=/root/rag-lab/.venv-ingest/bin/python -m uvicorn version_app:app --host 127.0.0.1 --port 8089 --workers 1
+ExecStartPost=/usr/bin/python3 /root/rag-lab/rag-version-lab/wait_ready.py
+TimeoutStartSec=210
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=30
+UMask=0077
+
+[Install]
+WantedBy=rag-version.target

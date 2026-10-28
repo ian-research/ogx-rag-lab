@@ -1,0 +1,23 @@
+[Unit]
+Description=RAG version-management ingestion worker (phase 2)
+After=network-online.target rag-ogx.service
+Requires=rag-ogx.service
+PartOf=rag-version.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+WorkingDirectory=/root/rag-lab/rag-version-lab
+EnvironmentFile=/etc/rag-lab/ogx.env
+Environment=VERSION_DATA_DIR=/root/rag-lab/rag-version-lab/data
+Environment=CUDA_VISIBLE_DEVICES=
+Environment=OMP_NUM_THREADS=2
+Environment=PATH=/root/rag-lab/.venv-ingest/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin
+ExecStart=/root/rag-lab/.venv-ingest/bin/python -u version_worker.py
+Restart=on-failure
+RestartSec=10
+TimeoutStopSec=30
+UMask=0077
+
+[Install]
+WantedBy=rag-version.target

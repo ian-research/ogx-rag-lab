@@ -1,0 +1,16 @@
+[Unit]
+Description=Existing RAG PostgreSQL container
+After=network-online.target
+Wants=network-online.target
+PartOf=rag-stack.target
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/bin/bash -c 'if [ "$(/usr/bin/podman inspect --format {{.State.Running}} rag-postgres)" != true ]; then exec /usr/bin/podman start rag-postgres; fi'
+ExecStop=/usr/bin/podman stop --time 30 rag-postgres
+TimeoutStartSec=120
+TimeoutStopSec=60
+
+[Install]
+WantedBy=rag-stack.target

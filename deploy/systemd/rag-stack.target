@@ -1,0 +1,7 @@
+[Unit]
+Description=Single-host OGX RAG lab
+Requires=rag-postgres.service rag-vllm.service rag-ogx.service rag-upload-worker.service rag-upload-api.service
+After=rag-postgres.service rag-vllm.service rag-ogx.service rag-upload-worker.service rag-upload-api.service
+
+[Install]
+WantedBy=multi-user.target

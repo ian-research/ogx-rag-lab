@@ -2,11 +2,15 @@
 
 在 AWS RHEL 10 与单张 L40S 上搭建标准 RAG：vLLM 提供本地生成，OGX 接入 CPU Embedding 和 pgvector，自建上传应用完成 PDF、DOCX、Markdown、TXT 的后台解析、分块、入库及带来源问答。
 
-这是单用户实验，服务只监听本机，通过 SSH 隧道访问；尚无登录、文档 ACL、并发压测与正式版本发布机制。
+这是单用户实验，服务只监听本机，通过 SSH 隧道访问；尚无登录、文档 ACL 和并发压测。第二阶段新增显式制度发布、有效期与适用范围管理。
 
 ![部署架构](figures/architecture.png)
 
 ## 从这里开始
+
+- [第二篇：制度版本管理](rag-version-lab/README.md)：独立 8089 服务，先按范围和日期选版，再通过 OGX 检索问答。
+
+- [基础安装与服务化部署](服务化部署.md)：原初始化脚本补正、依赖等待和重启自启动。
 
 - [完整实操文章](article-integrated.md)：架构、部署、配置、脚本与验收。
 - [部署复现手册](部署复现手册.md)：逐层安装和排障。
@@ -26,6 +30,7 @@ git rev-parse HEAD
 
 |目录|内容|
 |---|---|
+|rag-version-lab/|制度版本 API、后台 Worker、发布规则、独立数据及 53 项测试|
 |rag-upload-lab/|API、网页、CPU Worker、解析分块、示例和测试|
 |configs/|OGX 参考配置，密码通过环境变量提供|
 |scripts/|vLLM / OGX 启动、健康检查和版本采集|
@@ -35,7 +40,7 @@ git rev-parse HEAD
 
 2026-10-27 记录：RHEL 10、L40S、vLLM 0.32.0、OGX 1.5.0、PostgreSQL 16.15、pgvector 0.8.7；CPU Embedding 为 bge-small-zh-v1.5（512 维）。版本号描述实验，不代表最新版本。
 
-仓库不含模型权重、数据库、真实业务文档、凭据或完整远端依赖锁。模型 revision 待补齐，整理后的模板尚未在全新 RHEL 主机完整重跑。Word Title 修复通过本地测试，远端重新入库仍需验收。
+仓库不含模型权重、数据库、真实业务文档、凭据或完整远端依赖锁。模型 revision 已由 DSH 复现记录补齐。全栈服务已完成服务器重启验证；第二阶段 Markdown 联调及 53 项自动化测试通过。Word Title 修复通过本地测试，远端重新入库仍需验收。
 
 ## 测试
 

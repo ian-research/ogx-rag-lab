@@ -61,7 +61,7 @@ def check_publishable(conn, version):
             raise RuleError("bad_supersedes", f"被替代版本不存在：{supersedes}")
         target = dict(row)
         if target["policy_id"] != version["policy_id"] or target["scope"] != version["scope"]:
-            raise RuleError("bad_supersedes", "被替代版本必须同制度、同适用范围")
+            raise RuleError("bad_supersedes", "被替代版本必须同文档、同适用范围")
         if target["publication_status"] != "published":
             raise RuleError("conflict", "被替代版本不处于已发布状态")
         if target["valid_to"] and start > target["valid_to"]:
@@ -170,8 +170,8 @@ def resolve(conn, policy_id=None, scope=None, as_of=None):
         return {"status": "no_data", "versions": [], "as_of": as_of}
     if len({r["policy_id"] for r in hits}) > 1:
         return {"status": "needs_selection", "versions": hits, "as_of": as_of,
-                "reason": "存在多个适用制度，请指定 policy_id；这不代表正文存在矛盾"}
+                "reason": "存在多个适用文档，请指定 policy_id；这不代表正文存在矛盾"}
     if len(hits) > 1:
         return {"status": "conflict", "versions": hits, "as_of": as_of,
-                "reason": "同一制度下存在多个重叠的有效版本"}
+                "reason": "同一文档下存在多个重叠的有效版本"}
     return {"status": "ok", "versions": hits, "as_of": as_of}

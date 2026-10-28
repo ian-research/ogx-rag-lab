@@ -111,7 +111,7 @@ async def create_version(file: UploadFile = File(...), policy_id: str = Form(...
             raise HTTPException(400, '文件类型或文件名不支持')
         policy_id, version_label, scope = policy_id.strip(), version_label.strip(), scope.strip()
         if any(not v or len(v) > 120 for v in (policy_id, version_label, scope)):
-            raise HTTPException(400, '制度、版本和范围必须为 1～120 字符')
+            raise HTTPException(400, '文档、版本和范围必须为 1～120 字符')
         valid_from = rules.normalize_date(valid_from, 'valid_from')
         valid_to = rules.normalize_date(valid_to, 'valid_to')
         if not valid_from or (valid_to and valid_to <= valid_from):
@@ -140,7 +140,7 @@ async def create_version(file: UploadFile = File(...), policy_id: str = Form(...
                 conn.commit()
                 committed = True
             except sqlite3.IntegrityError as error:
-                raise HTTPException(409, '同一制度/范围/版本号已存在') from error
+                raise HTTPException(409, '同一文档/范围/版本号已存在') from error
         record.pop('source_path')
         return record
     finally:
@@ -246,9 +246,9 @@ def search(body: Question):
 @app.post('/api/ask')
 def ask(body: Question):
     found = _search_impl(body)
-    messages = {'needs_selection': '存在多个适用制度，请从候选中指定 policy_id 后再查询；这不表示正文存在冲突。',
-                'conflict': '同一制度有重叠的有效版本，请核对发布记录；相关条款列于来源中。',
-                'no_data': '没有找到该日期适用的制度资料。'}
+    messages = {'needs_selection': '存在多个适用文档，请从候选中指定 policy_id 后再查询；这不表示正文存在冲突。',
+                'conflict': '同一文档有重叠的有效版本，请核对发布记录；相关条款列于来源中。',
+                'no_data': '没有找到该日期适用的文档资料。'}
     if found['status'] != 'ok':
         return {**found, 'answer': messages[found['status']]}
     if not found['sources']:

@@ -22,11 +22,11 @@ function updateReplacements() {
   select.replaceChildren(new Option('不指定替代关系', ''));
   choices.forEach(v => select.add(new Option(`${v.version_label} · ${v.valid_from} → ${v.valid_to || '无预设结束日期'} · ${v.filename}`, v.version_id)));
   if (choices.some(v=>v.version_id===old)) select.value=old;
-  $('replaceHint').textContent=choices.length ? '只列出同制度、同范围的已发布版本。发布新版时将截断被替代版的有效期；未指定关系且日期重叠会被拒绝发布。' : '没有匹配的已发布版本。首次上传可留空；请核对制度标识和范围。';
+  $('replaceHint').textContent=choices.length ? '只列出同文档、同范围的已发布版本。发布新版时将截断被替代版的有效期；未指定关系且日期重叠会被拒绝发布。' : '没有匹配的已发布版本。首次上传可留空；请核对文档标识和范围。';
 }
 function render() {
   $('versions').replaceChildren();
-  if (!versions.length) {const tr=node('tr',''),td=node('td','还没有制度版本，请先上传。');td.colSpan=5;tr.append(td);$('versions').append(tr);}
+  if (!versions.length) {const tr=node('tr',''),td=node('td','还没有文档版本，请先上传。');td.colSpan=5;tr.append(td);$('versions').append(tr);}
   for (const v of versions) {
     const tr=document.createElement('tr'), cells=Array.from({length:5},()=>document.createElement('td'));
     cells.forEach(c=>tr.append(c));
@@ -41,7 +41,7 @@ function render() {
     if(v.publication_status==='draft' && v.job_status==='ready')add('发布',()=>mutate(v,'publish'));
     if(v.publication_status==='draft' && v.job_status==='failed')add('重试入库',()=>mutate(v,'retry'));
     if(v.publication_status==='published')add('撤回',()=>mutate(v,'withdraw'));
-    add('用于问答',()=>{$('askPolicy').value=v.policy_id;$('askScope').value=v.scope;$('question').focus();show('answer','已选择制度与范围。查询日期仍决定适用版本，并不强制使用此行版本。');});
+    add('用于问答',()=>{$('askPolicy').value=v.policy_id;$('askScope').value=v.scope;$('question').focus();show('answer','已选择文档与范围。查询日期仍决定适用版本，并不强制使用此行版本。');});
     $('versions').append(tr);
   }
   for (const [id, key] of [['policies','policy_id'],['scopes','scope']]) {
@@ -81,7 +81,7 @@ $('uploadForm').onsubmit=async event=>{
   event.preventDefault();const form=$('uploadForm');if(!form.reportValidity())return;
   const data=new FormData(form),file=$('file').files[0];
   for(const key of ['policy_id','policy_title','version_label','scope'])data.set(key,String(data.get(key)).trim());
-  if(['policy_id','version_label','scope'].some(k=>!data.get(k))){show('notice','制度标识、版本标签和范围不能为空。',true);return;}
+  if(['policy_id','version_label','scope'].some(k=>!data.get(k))){show('notice','文档标识、版本标签和范围不能为空。',true);return;}
   if(!file || !file.size || file.size>50*1024*1024){show('notice','请选择非空且不超过 50 MiB 的文件。',true);return;}
   if(data.get('valid_to') && data.get('valid_to')<=data.get('valid_from')){show('notice','失效日期必须晚于生效日期。',true);return;}
   for(const key of ['valid_to','supersedes'])if(!data.get(key))data.delete(key);
@@ -99,7 +99,7 @@ $('askForm').onsubmit=async event=>{
   try{
     const data=await api('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const lines=[data.answer,`\n查询日期：${data.as_of} · 范围：${data.scope}`];
-    if(data.version)lines.push(`适用制度：${data.version.policy_id} / ${data.version.version_label}`);
+    if(data.version)lines.push(`适用文档：${data.version.policy_id} / ${data.version.version_label}`);
     for(const s of data.sources||[])lines.push(`\n[${s.number}] ${s.source} · ${s.version_label}${s.page?' · 页 '+s.page:''}\n${s.text}`);
     if(data.finish_reason==='length')lines.push('\n回答可能被截断。');
     show('answer',lines.join('\n'));

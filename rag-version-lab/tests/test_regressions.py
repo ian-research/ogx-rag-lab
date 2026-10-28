@@ -103,6 +103,7 @@ def test_multiple_policies_are_selection_not_conflict(env):
     body = query(); body.pop('policy_id')
     result = client.post('/api/ask', json=body).json()
     assert result['status'] == 'needs_selection'
+    assert result['answer'] == '存在多个适用文档，请从候选中指定 policy_id 后再查询；这不表示正文存在冲突。'
     assert len(result['candidates']) == 2
     assert result['sources'] == []
 

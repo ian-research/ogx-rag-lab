@@ -23,7 +23,7 @@ from ogx_client import client, call
 from settings import LLM as LLM_MODEL
 
 FILES = store.DATA / 'files'
-ALLOWED = {'.md', '.txt', '.docx', '.pdf', '.doc'}
+ALLOWED = {'.md', '.txt', '.docx', '.pdf'}
 MAX_BYTES = 50 * 1024 * 1024
 VERSION_KEYS = ('version_id', 'policy_id', 'version_label', 'scope', 'filename', 'valid_from', 'valid_to')
 SYSTEM_PROMPT = ('你是企业知识助手。只根据参考资料回答，并引用编号如[1]。'
@@ -107,6 +107,8 @@ async def create_version(file: UploadFile = File(...), policy_id: str = Form(...
     try:
         filename = Path((file.filename or '').replace('\\', '/')).name
         suffix = Path(filename).suffix.lower()
+        if suffix == '.doc':
+            raise HTTPException(400, '暂不支持旧版 DOC，请先另存为 DOCX 后上传')
         if suffix not in ALLOWED or len(filename) > 240:
             raise HTTPException(400, '文件类型或文件名不支持')
         policy_id, version_label, scope = policy_id.strip(), version_label.strip(), scope.strip()
@@ -155,6 +157,7 @@ def list_versions(policy_id: str | None = None, scope: str | None = None):
         rows = store.list_versions(conn, policy_id, scope)
     for row in rows:
         row.pop('source_path', None)
+        store.public_times(row)
     return {'versions': rows}
 
 
@@ -165,7 +168,7 @@ def get_version(version_id: str):
     if not row:
         raise HTTPException(404, '版本不存在')
     row.pop('source_path', None)
-    return row
+    return store.public_times(row)
 
 
 @app.post('/api/versions/{version_id}/publish')
@@ -195,6 +198,7 @@ def resolve(scope: str | None = None, policy_id: str | None = None, as_of: str |
         result = rules.resolve(conn, policy_id, scope, as_of)
     for v in result['versions']:
         v.pop('source_path', None)
+        store.public_times(v)
     return result
 
 
@@ -210,7 +214,7 @@ def evidence_for(versions, question):
                 raise RuntimeError('检索结果与分数数量不匹配')
             for chunk, score in zip(result['chunks'], result['scores']):
                 meta = chunk.get('metadata', {})
-                sources.append({**{k: meta[k] for k in ('source', 'page', 'block', 'piece', 'heading', 'file_sha256') if k in meta},
+                sources.append({**{k: meta[k] for k in ('source', 'page', 'block', 'piece', 'heading', 'file_sha256', 'kind') if k in meta},
                                 **{k: version.get(k) for k in VERSION_KEYS},
                                 'source': meta.get('source') or version['filename'],
                                 'number': len(sources) + 1, 'text': chunk['content'],

@@ -10,7 +10,7 @@ body{font:16px/1.6 system-ui,sans-serif;background:#f4f6f9;color:#24324a;margin:
 <section class="panel"><h2>1 · 上传文档版本</h2>
 <p class="hint">每次上传一个版本。带 * 的内容必填；同一文档的新旧版使用相同的文档标识。文件处理完成后，还需要单独发布。</p>
 <form id="uploadForm"><div class="grid">
-<label class="wide">文档文件 *<input id="file" name="file" type="file" required accept=".pdf,.md,.txt,.docx,.doc"><small>PDF、Markdown、UTF-8 TXT、DOCX；旧版 DOC 需要 LibreOffice。最大 50 MiB。</small></label>
+<label class="wide">文档文件 *<input id="file" name="file" type="file" required accept=".pdf,.md,.txt,.docx"><small>PDF、Markdown、UTF-8 TXT、DOCX；旧版 DOC 请先另存为 DOCX。最大 50 MiB。</small></label>
 <label>文档标识 *<input id="policy" name="policy_id" type="text" required maxlength="120" placeholder="例如 it-device-policy" list="policies"><small>同一文档沿用此标识，不以文件名区分。</small></label>
 <label>文档标题<input name="policy_title" type="text" placeholder="例如 员工电脑管理文档" maxlength="240"></label>
 <label>版本标签 *<input name="version_label" type="text" required maxlength="120" placeholder="例如 v1、v2"></label>

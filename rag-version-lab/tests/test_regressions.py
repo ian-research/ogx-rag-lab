@@ -36,7 +36,7 @@ def env(tmp_path, monkeypatch):
 
 def add(vid, start='2026-01-01', end=None, sup=None, policy='p', status='ready', pub='draft'):
     with store.connect() as conn:
-        conn.execute("INSERT INTO versions(version_id,policy_id,version_label,scope,job_status,publication_status,valid_from,valid_to,supersedes,created_at,store_id,filename,source_path,sha256) VALUES(?,?,?,'all',?,?,?,?,?,'now','vs','test.pdf','unused','hash')", (vid, policy, vid, status, pub, start, end, sup))
+        conn.execute("INSERT INTO versions(version_id,policy_id,version_label,scope,job_status,publication_status,valid_from,valid_to,supersedes,created_at,store_id,filename,source_path,sha256) VALUES(?,?,?,'all',?,?,?,?,?,'2026-01-01T00:00:00+00:00','vs','test.pdf','unused','hash')", (vid, policy, vid, status, pub, start, end, sup))
 
 
 def publish(vid):
@@ -356,3 +356,63 @@ def test_web_form_metadata_round_trip(env):
     assert listed[0]['policy_id'] == fields['policy_id']
     assert listed[0]['valid_from'] == fields['valid_from']
     assert 'source_path' not in listed[0]
+
+
+@pytest.mark.parametrize('kind', ['ocr', 'table', 'text'])
+def test_source_kind_preserved_on_search_and_ask(env, monkeypatch, kind):
+    app, _, client = env
+    add('a');publish('a')
+    def fake_call(c, method, path, body):
+        if path == '/vector-io/query':
+            return {'chunks':[{'content':'正文','chunk_id':'one','metadata':{'kind':kind}}], 'scores':[0.9]}
+        return {'choices':[{'message':{'content':'回答[1]'},'finish_reason':'stop'}]}
+    monkeypatch.setattr(app,'call',fake_call)
+    for endpoint in ('search','ask'):
+        assert client.post('/api/'+endpoint,json=query()).json()['sources'][0]['kind']==kind
+
+
+def test_doc_rejected_before_queue(env):
+    app, _, client=env
+    data={'policy_id':'p','version_label':'v1','scope':'all','valid_from':'2026-01-01'}
+    r=client.post('/api/versions',data=data,files={'file':('old.DOC',b'old binary')})
+    assert r.status_code==400 and '另存为 DOCX' in r.json()['detail']
+    assert client.get('/api/versions').json()['versions']==[]
+    assert not app.FILES.exists()
+
+
+def test_timestamp_outputs_normalize_legacy_utc(env):
+    _, _, client=env
+    add('a')
+    with store.connect() as conn:
+        conn.execute("UPDATE versions SET created_at='2026-10-28T08:00:00+08:00',published_at='2026-10-28T00:00:00' WHERE version_id='a'")
+    row=client.get('/api/versions/a').json()
+    assert row['created_at']==row['published_at']=='2026-10-28T00:00:00+00:00'
+    publish('a')
+    client.post('/api/versions/a/withdraw')
+    row=client.get('/api/versions').json()['versions'][0]
+    assert all(row[k].endswith('+00:00') for k in ('created_at','published_at','withdrawn_at'))
+    with store.connect() as conn:
+        assert store.get(conn,'a')['created_at']=='2026-10-28T08:00:00+08:00'  # output only
+        assert all(r[0].endswith('+00:00') for r in conn.execute('SELECT at FROM publish_log'))
+
+
+def test_additive_migration_backup_and_offline_rollback(tmp_path,monkeypatch):
+    db=tmp_path/'version.db'
+    monkeypatch.setattr(store,'DATA',tmp_path);monkeypatch.setattr(store,'DB',db)
+    with store.connect() as conn:
+        conn.executescript(store.SCHEMA)
+        conn.execute('DROP TABLE replacement_snapshots')
+    add('legacy')
+    store.init();store.init()
+    backups=list(tmp_path.glob('*.pre-restore-*.bak'))
+    assert len(backups)==1
+    with sqlite3.connect(backups[0]) as conn:
+        assert conn.execute("SELECT version_id FROM versions").fetchall()==[('legacy',)]
+        assert not conn.execute("SELECT 1 FROM sqlite_master WHERE name='replacement_snapshots'").fetchone()
+    import subprocess
+    envvars={**os.environ,'VERSION_DATA_DIR':str(tmp_path)}
+    subprocess.run([sys.executable,str(ROOT/'migrate_db.py'),'--services-stopped','--restore',str(backups[0])],env=envvars,check=True,capture_output=True)
+    with store.connect() as conn:
+        assert store.get(conn,'legacy')['publication_status']=='draft'
+        assert not conn.execute("SELECT 1 FROM sqlite_master WHERE name='replacement_snapshots'").fetchone()
+    assert len(list(tmp_path.glob('*.before-rollback-*.bak')))==1

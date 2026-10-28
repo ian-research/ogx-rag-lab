@@ -1,3 +1,5 @@
+本次联合测试修复：见 [P1–P6 升级与回退](FIXES-P1-P6.md)。
+
 # 制度版本管理：部署与配置
 
 2026-10-28：本地与 RHEL 服务器各通过 53 项自动化测试；服务器完成 Markdown 上传、入库、发布和按日期问答。PDF、DOCX、扫描件未在本阶段复测，备份恢复和并发压测未验证。
@@ -30,7 +32,7 @@ cp -a /etc/systemd/system/rag-version* "$backup_dir/"
 
 ```bash
 cd /root/rag-lab/phase2-fix-staging
-cp index.html ui.js version_app.py version_rules.py version_store.py version_worker.py wait_ready.py check_existing.py README.md /root/rag-lab/rag-version-lab/
+cp index.html ui.js migrate_db.py version_app.py version_rules.py version_store.py version_worker.py wait_ready.py check_existing.py README.md /root/rag-lab/rag-version-lab/
 cp -a tests /root/rag-lab/rag-version-lab/
 cp deploy/rag-version* /etc/systemd/system/
 systemd-analyze verify /etc/systemd/system/rag-version.target

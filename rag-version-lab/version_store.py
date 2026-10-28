@@ -1,5 +1,7 @@
 """版本元数据存储（SQLite）。与第一阶段 jobs.sqlite 完全分离。"""
 import os
+import datetime
+from zoneinfo import ZoneInfo
 import sqlite3
 from pathlib import Path
 
@@ -47,6 +49,10 @@ CREATE TABLE IF NOT EXISTS ingestion_attempts (
   id INTEGER PRIMARY KEY, version_id TEXT NOT NULL, store_id TEXT,
   started_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS replacement_snapshots (
+  version_id TEXT PRIMARY KEY, target_id TEXT NOT NULL,
+  previous_valid_to TEXT, cutoff TEXT NOT NULL, supersede_log_id INTEGER NOT NULL
+);
 CREATE INDEX IF NOT EXISTS idx_versions_lookup
   ON versions(policy_id, scope, publication_status, valid_from);
 """
@@ -62,6 +68,15 @@ def connect():
 
 def init():
     with connect() as conn:
+        exists = conn.execute("SELECT 1 FROM sqlite_master WHERE name='versions'").fetchone()
+        migrated = conn.execute("SELECT 1 FROM sqlite_master WHERE name='replacement_snapshots'").fetchone()
+        if exists and not migrated:
+            # SQLite backup includes committed WAL data. Never modify historical rows.
+            stamp = datetime.datetime.now(datetime.timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')
+            backup = DB.with_name(DB.name + '.pre-restore-' + stamp + '.bak')
+            with sqlite3.connect(backup) as dest:
+                conn.backup(dest)
+            backup.chmod(0o600)
         conn.executescript(SCHEMA)
 
 
@@ -88,5 +103,26 @@ def write_log(conn, action, version=None, detail=None, at=None):
         "VALUES (?,?,?,?,?,?)",
         (action, (version or {}).get("version_id"), (version or {}).get("policy_id"),
          (version or {}).get("scope"), detail,
-         at or datetime.datetime.now().isoformat(timespec="seconds")),
+         timestamp_utc(at) if at else utc_now()),
     )
+
+
+def utc_now():
+    return datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds")
+
+
+def timestamp_utc(value):
+    if not value:
+        return value
+    dt = datetime.datetime.fromisoformat(value)
+    if dt.tzinfo is None:
+        # Earlier RHEL deployment used UTC for naive datetime.now().
+        dt = dt.replace(tzinfo=ZoneInfo(os.environ.get("RAG_LEGACY_TIMESTAMP_TZ", "UTC")))
+    return dt.astimezone(datetime.timezone.utc).isoformat()
+
+
+def public_times(row):
+    for key in ("created_at", "published_at", "withdrawn_at"):
+        if row.get(key):
+            row[key] = timestamp_utc(row[key])
+    return row

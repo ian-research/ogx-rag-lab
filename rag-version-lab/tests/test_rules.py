@@ -141,3 +141,66 @@ if __name__ == "__main__":
                 failed += 1; print(f"  ❌ {name}: {type(e).__name__}: {e}")
     print(f"\n通过 {passed} / 失败 {failed}")
     sys.exit(1 if failed else 0)
+
+
+def test_restore_open_and_finite_end():
+    for previous in (None, '2027-01-01'):
+        conn = fresh()
+        add(conn, 'a', vt=previous); rules.publish(conn, 'a')
+        add(conn, 'b', label='v2', vf='2026-11-01', sup='a'); rules.publish(conn, 'b')
+        result = rules.withdraw(conn, 'b')
+        assert result['restoration']['status'] == 'restored'
+        assert store.get(conn, 'a')['valid_to'] == previous
+        assert rules.resolve(conn, 'it-device-policy', 'all', '2026-11-01')['versions'][0]['version_id'] == 'a'
+        assert [r[0] for r in conn.execute('SELECT action FROM publish_log')] == ['publish','supersede','publish','withdraw','restore']
+        assert store.get(conn, 'b')['publication_status'] == 'withdrawn'
+
+
+def test_restore_blocked_by_successor():
+    conn=fresh(); add(conn,'a'); rules.publish(conn,'a')
+    add(conn,'b',label='v2',vf='2026-06-01',sup='a');rules.publish(conn,'b')
+    add(conn,'c',label='v3',vf='2026-11-01',sup='b');rules.publish(conn,'c')
+    assert rules.withdraw(conn,'b')['restoration']['reason']=='overlap'
+    assert store.get(conn,'a')['valid_to']=='2026-06-01'
+    assert rules.resolve(conn,'it-device-policy','all','2026-11-01')['versions'][0]['version_id']=='c'
+
+
+def test_legacy_withdraw_never_guesses_null_end():
+    conn=fresh();add(conn,'a',pub='published',vt='2026-11-01')
+    add(conn,'b',label='v2',pub='published',vf='2026-11-01',sup='a')
+    assert rules.withdraw(conn,'b')['restoration']['reason']=='legacy_snapshot_missing'
+    assert store.get(conn,'a')['valid_to']=='2026-11-01'
+
+
+def test_withdrawn_predecessor_is_not_restored():
+    conn=fresh();add(conn,'a');rules.publish(conn,'a')
+    add(conn,'b',label='v2',vf='2026-11-01',sup='a');rules.publish(conn,'b')
+    rules.withdraw(conn,'a')
+    assert rules.withdraw(conn,'b')['restoration']['reason']=='predecessor_not_published'
+
+
+def test_restore_failure_rolls_back_withdrawal():
+    conn=fresh();add(conn,'a');rules.publish(conn,'a')
+    add(conn,'b',label='v2',vf='2026-11-01',sup='a');rules.publish(conn,'b')
+    conn.execute("CREATE TRIGGER reject_restore BEFORE INSERT ON publish_log WHEN NEW.action='restore' BEGIN SELECT RAISE(ABORT,'test'); END")
+    import pytest
+    with pytest.raises(sqlite3.IntegrityError):rules.withdraw(conn,'b')
+    assert store.get(conn,'b')['publication_status']=='published'
+    assert store.get(conn,'a')['valid_to']=='2026-11-01'
+
+
+def test_later_change_prevents_restore_even_when_cutoff_is_same():
+    conn=fresh();add(conn,'a');rules.publish(conn,'a')
+    add(conn,'b',label='v2',vf='2026-11-01',sup='a');rules.publish(conn,'b')
+    store.write_log(conn,'supersede',store.get(conn,'a'),'later change');conn.commit()
+    assert rules.withdraw(conn,'b')['restoration']['reason']=='predecessor_changed'
+    assert store.get(conn,'a')['valid_to']=='2026-11-01'
+
+
+def test_republish_takes_new_snapshot_and_clears_withdrawn_time():
+    conn=fresh();add(conn,'a');rules.publish(conn,'a')
+    add(conn,'b',label='v2',vf='2026-11-01',sup='a');rules.publish(conn,'b')
+    rules.withdraw(conn,'b');rules.publish(conn,'b')
+    assert store.get(conn,'b')['withdrawn_at'] is None
+    assert rules.withdraw(conn,'b')['restoration']['status']=='restored'
+    assert store.get(conn,'a')['valid_to'] is None

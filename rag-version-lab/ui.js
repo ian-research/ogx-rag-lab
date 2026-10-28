@@ -41,7 +41,7 @@ function render() {
     if(v.publication_status==='draft' && v.job_status==='ready')add('发布',()=>mutate(v,'publish'));
     if(v.publication_status==='draft' && v.job_status==='failed')add('重试入库',()=>mutate(v,'retry'));
     if(v.publication_status==='published')add('撤回',()=>mutate(v,'withdraw'));
-    add('用于问答',()=>{$('askPolicy').value=v.policy_id;$('askScope').value=v.scope;$('question').focus();show('answer','已选择文档与范围。查询日期仍决定适用版本，并不强制使用此行版本。');});
+    if(v.publication_status==='published' && v.job_status==='ready')add('用于问答',()=>{$('askPolicy').value=v.policy_id;$('askScope').value=v.scope;$('question').focus();show('answer','已选择文档与范围。查询日期仍决定适用版本，并不强制使用此行版本。');});
     $('versions').append(tr);
   }
   for (const [id, key] of [['policies','policy_id'],['scopes','scope']]) {
@@ -64,24 +64,27 @@ async function mutate(v,action) {
   let suffix=action;
   if(action==='publish' && !confirm(`发布 ${v.policy_id} / ${v.version_label}？\n生效日期：${v.valid_from}${v.supersedes?'\n发布将更新被替代版本的有效期。':''}`))return;
   if(action==='withdraw') {
-    const reason=prompt('撤回后此版本将不再参与检索，包括历史日期查询。请填写撤回原因：');
+    const reason=prompt('撤回后此版本不再参与任何日期的检索；有可恢复记录且无冲突时会恢复旧版有效期。请填写撤回原因：');
     if(reason===null)return;
     if(!reason.trim()){show('actionNotice','撤回原因不能为空。',true);return;}
     suffix+='?reason='+encodeURIComponent(reason.trim());
   }
   busy.add(v.version_id);render();
-  try{await api('/api/versions/'+encodeURIComponent(v.version_id)+'/'+suffix,{method:'POST'});show('actionNotice',`${v.version_label}：${{publish:'发布成功；是否适用仍取决于查询日期。',withdraw:'已撤回。',retry:'已重新排队。'}[action]}`);await refresh();}
+  try{const result=await api('/api/versions/'+encodeURIComponent(v.version_id)+'/'+suffix,{method:'POST'});show('actionNotice',`${v.version_label}：${{publish:'发布成功；是否适用仍取决于查询日期。',withdraw:'已撤回。',retry:'已重新排队。'}[action]}`);if(action==='withdraw'){const r=result.restoration;const reasons={legacy_snapshot_missing:'旧记录没有截断前的有效期，无法自动恢复。',no_predecessor:'此版本没有前一版本。',predecessor_not_published:'前一版本已撤回或不存在。',predecessor_changed:'前一版本已被后续操作修改。',overlap:'恢复会与其他已发布版本重叠。'};show('actionNotice',r?.status==='restored'?'已撤回，并恢复前一版本的有效期至 '+(r.valid_to||'无预设结束日期')+'。':'已撤回，未自动恢复旧版：'+(reasons[r?.reason]||'请核对发布记录。')+' 请检查是否存在适用空档。');}await refresh();}
   catch(e){show('actionNotice',e.message,true);}
   finally{busy.delete(v.version_id);render();}
 }
 $('policy').addEventListener('input',updateReplacements);
 $('scope').addEventListener('input',updateReplacements);
 $('refresh').onclick=refresh;
+$('uploadForm').addEventListener('input',()=>show('notice',''));
+$('uploadForm').addEventListener('change',()=>show('notice',''));
 $('uploadForm').onsubmit=async event=>{
   event.preventDefault();const form=$('uploadForm');if(!form.reportValidity())return;
   const data=new FormData(form),file=$('file').files[0];
   for(const key of ['policy_id','policy_title','version_label','scope'])data.set(key,String(data.get(key)).trim());
   if(['policy_id','version_label','scope'].some(k=>!data.get(k))){show('notice','文档标识、版本标签和范围不能为空。',true);return;}
+  if(file && /\.doc$/i.test(file.name)){show('notice','暂不支持旧版 DOC，请先另存为 DOCX 后上传',true);return;}
   if(!file || !file.size || file.size>50*1024*1024){show('notice','请选择非空且不超过 50 MiB 的文件。',true);return;}
   if(data.get('valid_to') && data.get('valid_to')<=data.get('valid_from')){show('notice','失效日期必须晚于生效日期。',true);return;}
   for(const key of ['valid_to','supersedes'])if(!data.get(key))data.delete(key);
@@ -100,7 +103,7 @@ $('askForm').onsubmit=async event=>{
     const data=await api('/api/ask',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     const lines=[data.answer,`\n查询日期：${data.as_of} · 范围：${data.scope}`];
     if(data.version)lines.push(`适用文档：${data.version.policy_id} / ${data.version.version_label}`);
-    for(const s of data.sources||[])lines.push(`\n[${s.number}] ${s.source} · ${s.version_label}${s.page?' · 页 '+s.page:''}\n${s.text}`);
+    for(const s of data.sources||[])lines.push(`\n[${s.number}] ${s.source} · ${s.version_label} · ${{ocr:'OCR识别',table:'表格',text:'文本'}[s.kind]||'来源类型未知'}${s.page?' · 页 '+s.page:''}\n${s.text}`);
     if(data.finish_reason==='length')lines.push('\n回答可能被截断。');
     show('answer',lines.join('\n'));
     if(data.status==='needs_selection')for(const id of new Set((data.candidates||[]).map(v=>v.policy_id))){const b=node('button','选择 '+id);b.type='button';b.onclick=()=>{$('askPolicy').value=id;$('askForm').requestSubmit();};$('candidates').append(b);}

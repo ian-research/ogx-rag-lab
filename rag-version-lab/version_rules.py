@@ -1,6 +1,8 @@
 """版本规则：判定与事务集中在此，便于单测。"""
 import datetime
 import re
+import json
+import version_store as store
 from zoneinfo import ZoneInfo
 
 BUSINESS_TZ = ZoneInfo("Asia/Shanghai")
@@ -85,7 +87,7 @@ def check_publishable(conn, version):
 
 
 def publish(conn, version_id, now=None):
-    now = now or datetime.datetime.now().isoformat(timespec="seconds")
+    now = store.timestamp_utc(now) if now else store.utc_now()
     conn.execute("BEGIN IMMEDIATE")
     try:
         row = conn.execute("SELECT * FROM versions WHERE version_id=?", (version_id,)).fetchone()
@@ -98,6 +100,8 @@ def publish(conn, version_id, now=None):
             raise RuleError("conflict", reason)
 
         if version["supersedes"]:
+            previous = conn.execute("SELECT valid_to FROM versions WHERE version_id=?",
+                                    (version["supersedes"],)).fetchone()[0]
             updated = conn.execute(
                 "UPDATE versions SET valid_to=? WHERE version_id=? AND publication_status='published'",
                 (version["valid_from"], version["supersedes"]),
@@ -111,8 +115,12 @@ def publish(conn, version_id, now=None):
                  f"valid_to={version['valid_from']}", now),
             )
 
+            log_id = conn.execute("SELECT last_insert_rowid()").fetchone()[0]
+            conn.execute("INSERT OR REPLACE INTO replacement_snapshots VALUES (?,?,?,?,?)",
+                         (version_id, version["supersedes"], previous, version["valid_from"], log_id))
+
         conn.execute(
-            "UPDATE versions SET publication_status='published', published_at=? WHERE version_id=?",
+            "UPDATE versions SET publication_status='published', withdrawn_at=NULL, published_at=? WHERE version_id=?",
             (now, version_id),
         )
         conn.execute(
@@ -129,7 +137,7 @@ def publish(conn, version_id, now=None):
 
 
 def withdraw(conn, version_id, reason="manual", now=None):
-    now = now or datetime.datetime.now().isoformat(timespec="seconds")
+    now = store.timestamp_utc(now) if now else store.utc_now()
     conn.execute("BEGIN IMMEDIATE")
     try:
         row = conn.execute("SELECT * FROM versions WHERE version_id=?", (version_id,)).fetchone()
@@ -148,11 +156,40 @@ def withdraw(conn, version_id, reason="manual", now=None):
             "VALUES ('withdraw',?,?,?,?,?)",
             (version_id, version["policy_id"], version["scope"], reason, now),
         )
+        restoration = restore_predecessor(conn, version, now)
         conn.execute("COMMIT")
-        return {"result": "withdrawn", "version_id": version_id}
+        return {"result": "withdrawn", "version_id": version_id, "restoration": restoration}
     except Exception:
         conn.execute("ROLLBACK")
         raise
+
+
+def restore_predecessor(conn, version, now):
+    snapshot = conn.execute("SELECT * FROM replacement_snapshots WHERE version_id=?",
+                            (version["version_id"],)).fetchone()
+    if not snapshot:
+        return {"status": "skipped", "reason": "legacy_snapshot_missing" if version["supersedes"] else "no_predecessor"}
+    snap = dict(snapshot)
+    target = conn.execute("SELECT * FROM versions WHERE version_id=?", (snap["target_id"],)).fetchone()
+    reason = None
+    if not target or target["publication_status"] != "published":
+        reason = "predecessor_not_published"
+    elif target["valid_to"] != snap["cutoff"]:
+        reason = "predecessor_changed"
+    elif conn.execute("SELECT 1 FROM publish_log WHERE version_id=? AND id>? AND action IN ('supersede','restore','publish','withdraw')",
+                      (snap["target_id"], snap["supersede_log_id"])).fetchone():
+        reason = "predecessor_changed"
+    else:
+        others = conn.execute("SELECT * FROM versions WHERE policy_id=? AND scope=? AND publication_status='published' AND version_id!=?",
+                              (target["policy_id"], target["scope"], snap["target_id"]))
+        if any(overlaps(target["valid_from"], snap["previous_valid_to"], r["valid_from"], r["valid_to"]) for r in others):
+            reason = "overlap"
+    if reason:
+        store.write_log(conn, 'restore_skipped', version, reason, now)
+        return {"status": "skipped", "reason": reason}
+    conn.execute("UPDATE versions SET valid_to=? WHERE version_id=?", (snap["previous_valid_to"], snap["target_id"]))
+    store.write_log(conn, 'restore', dict(target), json.dumps({"withdrawn_version": version["version_id"], "valid_to": snap["previous_valid_to"]}), now)
+    return {"status": "restored", "version_id": snap["target_id"], "valid_to": snap["previous_valid_to"]}
 
 
 def resolve(conn, policy_id=None, scope=None, as_of=None):

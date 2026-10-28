@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>制度知识库 · 版本管理</title><style>
+body{font:16px/1.6 system-ui,sans-serif;background:#f4f6f9;color:#24324a;margin:0}main{max-width:1100px;margin:40px auto;padding:0 20px}h1{margin-bottom:4px}p{color:#56657c}.panel{background:white;border:1px solid #dce2eb;border-radius:12px;padding:22px;margin:20px 0}button{border:0;border-radius:6px;background:#2459c5;color:white;padding:9px 16px;cursor:pointer}button:disabled{opacity:.5;cursor:wait}input[type=text]{box-sizing:border-box;padding:12px;border:1px solid #b8c5d6;border-radius:6px;width:100%;margin-bottom:12px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{text-align:left;padding:10px;border-bottom:1px solid #e4e8ef;vertical-align:top}td button,td a{margin:3px;font-size:13px}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f7f9fc;padding:16px;border-radius:8px}small{color:#65728a}#notice{white-space:pre-wrap;color:#34496d}.tablewrap{overflow-x:auto}.error{color:#ad2335}a{color:#2459c5}
+
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}label{display:block;font-weight:600}label small{display:block;font-weight:400}input,select,textarea{box-sizing:border-box;width:100%;padding:10px;border:1px solid #b8c5d6;border-radius:6px;font:inherit;background:white}input[type=text]{margin:0;padding:10px}textarea{resize:vertical}.wide{grid-column:1/-1}.actions{display:flex;gap:10px;align-items:center;margin-top:16px}.secondary{background:#eaf0fb;color:#2459c5}.badge{display:inline-block;border-radius:5px;padding:2px 7px;background:#edf2fa;margin:2px 0}.ready{background:#e4f3e9;color:#246641}td{min-width:100px}td small{display:block}.hint{font-size:14px}.notice{white-space:pre-wrap}h2{font-size:21px}#candidates button{margin:5px}button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #87b3ff;outline-offset:2px}@media(max-width:680px){.grid{grid-template-columns:1fr}main{margin:20px auto;padding:0 12px}.panel{padding:16px}h1{font-size:26px}}
+</style></head><body><main>
+<h1>制度知识库 · 版本管理</h1><p>上传制度、发布版本，再按适用范围和日期查找答案。</p>
+<small id="health" role="status">正在检查后台处理服务…</small>
+<section class="panel"><h2>1 · 上传制度版本</h2>
+<p class="hint">每次上传一个版本。带 * 的内容必填；同一制度的新旧版使用相同的制度标识。文件处理完成后，还需要单独发布。</p>
+<form id="uploadForm"><div class="grid">
+<label class="wide">制度文件 *<input id="file" name="file" type="file" required accept=".pdf,.md,.txt,.docx,.doc"><small>PDF、Markdown、UTF-8 TXT、DOCX；旧版 DOC 需要 LibreOffice。最大 50 MiB。</small></label>
+<label>制度标识 *<input id="policy" name="policy_id" type="text" required maxlength="120" placeholder="例如 it-device-policy" list="policies"><small>同一制度沿用此标识，不以文件名区分。</small></label>
+<label>制度标题<input name="policy_title" type="text" placeholder="例如 员工电脑管理制度" maxlength="240"></label>
+<label>版本标签 *<input name="version_label" type="text" required maxlength="120" placeholder="例如 v1、v2"></label>
+<label>适用范围 *<input id="scope" name="scope" type="text" required maxlength="120" placeholder="例如 all 或 dept-it" list="scopes"><small>范围需准确匹配；all 是一个范围值，不是通配符。</small></label>
+<label>生效日期 *<input name="valid_from" type="date" required><small>从这一天开始适用，包含当天。</small></label>
+<label>失效日期<input name="valid_to" type="date"><small>可留空；填入后不包含这一天。</small></label>
+<label class="wide">替代旧版本（可选）<select id="supersedes" name="supersedes"><option value="">不指定替代关系</option></select><small id="replaceHint">先填写制度标识和范围，再选择同制度、同范围的已发布版本。首次上传可留空。</small></label>
+</div><div class="actions"><button id="upload" type="submit">上传并后台处理</button></div></form>
+<p id="notice" class="notice" role="status" aria-live="polite"></p></section>
+<datalist id="policies"></datalist><datalist id="scopes"></datalist>
+<section class="panel"><h2>2 · 版本与发布状态</h2><p class="hint">每 3 秒刷新。入库完成不等于已发布；已发布也不等于今天生效，问答时会按日期选版。</p>
+<button id="refresh" class="secondary" type="button">刷新列表</button>
+<div class="tablewrap"><table><thead><tr><th>制度 / 版本</th><th>文件 / 范围</th><th>有效日期</th><th>入库 / 发布</th><th>操作</th></tr></thead><tbody id="versions"></tbody></table></div>
+<p id="actionNotice" class="notice" role="status" aria-live="polite"></p>
+<details><summary>处理详情</summary><pre id="detail">选择一个版本查看详情。</pre></details></section>
+<section class="panel"><h2>3 · 按版本规则问答</h2><p class="hint">只检索已发布且在查询日期有效的版本。没有适用版本时不生成回答；多个制度适用时，请明确选择制度。</p>
+<form id="askForm"><div class="grid">
+<label>制度标识<input id="askPolicy" type="text" maxlength="120" list="policies" placeholder="可留空；多个制度时再选择"></label>
+<label>适用范围 *<input id="askScope" type="text" maxlength="120" required list="scopes" placeholder="例如 all"></label>
+<label>查询日期<input id="asOf" type="date"><small>留空按服务器的上海时区当天查询。</small></label>
+<label class="wide">问题 *<textarea id="question" required maxlength="300" rows="3" placeholder="电脑使用3年能申请换新吗？"></textarea></label>
+</div><div class="actions"><button id="ask" type="submit">检索并回答</button></div></form>
+<div id="candidates"></div><pre id="answer" aria-live="polite">回答、适用版本和引用来源将显示在这里。</pre></section>
+<p class="hint">单用户实验入口，尚无登录和文档权限控制。请通过本机或 SSH 隧道访问。</p>
+</main><script src="/ui.js" defer></script></body></html>

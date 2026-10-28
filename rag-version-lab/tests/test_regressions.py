@@ -321,3 +321,37 @@ def call(c, method, path, body):
             proc.terminate(); proc.wait(timeout=20)
         log2.close()
         conn.close()
+
+
+def test_web_entry_and_assets(env):
+    _, _, client = env
+    response = client.get('/')
+    assert response.status_code == 200
+    assert 'text/html' in response.headers['content-type']
+    assert 'name="valid_from" type="date" required' in response.text
+    assert 'name="supersedes"' in response.text
+    script = client.get('/ui.js')
+    assert script.status_code == 200
+    assert 'text/javascript' in script.headers['content-type']
+    assert client.get('/version_store.py').status_code == 404
+
+
+def test_web_form_metadata_round_trip(env):
+    _, _, client = env
+    fields = {'policy_id': 'it-policy', 'version_label': 'v1',
+              'scope': 'all', 'valid_from': '2026-01-01'}
+    missing = dict(fields)
+    missing.pop('valid_from')
+    assert client.post('/api/versions', data=missing,
+                       files={'file': ('policy.md', b'policy')}).status_code == 422
+    response = client.post('/api/versions', data=fields,
+                           files={'file': ('policy.md', b'policy')})
+    assert response.status_code == 202
+    v = response.json()
+    assert v['publication_status'] == 'draft'
+    assert v['supersedes'] is None and v['valid_to'] is None
+    assert client.post(f"/api/versions/{v['version_id']}/publish").status_code == 409
+    listed = client.get('/api/versions').json()['versions']
+    assert listed[0]['policy_id'] == fields['policy_id']
+    assert listed[0]['valid_from'] == fields['valid_from']
+    assert 'source_path' not in listed[0]

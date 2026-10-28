@@ -11,7 +11,7 @@ from pathlib import Path
 
 import httpx
 from fastapi import FastAPI, File, Form, HTTPException, UploadFile, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 _PHASE1 = os.environ.get('RAG_PHASE1_DIR', '/root/rag-lab/rag-upload-lab')
@@ -38,6 +38,17 @@ async def lifespan(app):
 
 
 app = FastAPI(title='RAG version lab', lifespan=lifespan)
+
+
+@app.get('/', include_in_schema=False)
+def index():
+    return FileResponse(Path(__file__).with_name('index.html'), headers={'Cache-Control': 'no-cache'})
+
+
+@app.get('/ui.js', include_in_schema=False)
+def ui_script():
+    return FileResponse(Path(__file__).with_name('ui.js'), media_type='text/javascript',
+                        headers={'Cache-Control': 'no-cache'})
 
 
 @app.middleware('http')

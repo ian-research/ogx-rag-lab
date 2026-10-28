@@ -30,7 +30,7 @@ cp -a /etc/systemd/system/rag-version* "$backup_dir/"
 
 ```bash
 cd /root/rag-lab/phase2-fix-staging
-cp version_app.py version_rules.py version_store.py version_worker.py wait_ready.py check_existing.py README.md /root/rag-lab/rag-version-lab/
+cp index.html ui.js version_app.py version_rules.py version_store.py version_worker.py wait_ready.py check_existing.py README.md /root/rag-lab/rag-version-lab/
 cp -a tests /root/rag-lab/rag-version-lab/
 cp deploy/rag-version* /etc/systemd/system/
 systemd-analyze verify /etc/systemd/system/rag-version.target
@@ -237,3 +237,19 @@ versions 表关键字段：
 - 文档级 ACL：scope 只用于检索范围，不充当权限
 - 多用户、并发写入压测
 - 索引调优、重排、混合检索
+
+
+## Web 入口（新增）
+
+启动 `rag-version-api` 后打开 `http://127.0.0.1:8089/`。页面由同一个 API 服务提供，不需要 Node.js、额外容器或额外 systemd 单元；第一篇 8088 页面保持独立。
+
+远程访问可转发端口：`ssh -L 8089:127.0.0.1:8089 用户@服务器`，再在个人电脑打开上述地址。服务仍仅监听回环地址；当前没有登录与 ACL，不应直接对公网开放。
+
+1. 选择一个文件，填写制度标识、版本标签、范围和生效日期。标题、失效日期与替代关系可选。
+2. 替代版本下拉框仅列出同制度、同范围的已发布版本。有效期重叠但未指定替代关系时，后端拒绝发布。
+3. 上传后查看入库状态，等到“入库完成”后点击“发布”。撤回会使此版本不再参与检索，包括历史日期查询；失败草稿可重试。
+4. 在问答区填写范围、问题，可指定制度与日期。多个制度适用时页面显示选择按钮；不会跳过选版规则。
+
+更新已有部署时，将 `version_app.py`、`index.html`、`ui.js` 一起复制到 `/root/rag-lab/rag-version-lab/`，然后 `systemctl restart rag-version-api`。不要覆盖 data。其余代码若版本不一致，仍走上方完整更新流程。
+
+新增页面与 API 表单回归后，本地测试总计 55 项通过；浏览器验证了页面渲染和无适用版本的反馈。此次前端新增尚未在 RHEL 上联调上传与真实模型生成；前述服务器 53 项结果属于前端加入前的版本。

@@ -1,0 +1,718 @@
+{
+  "questions_sha256": "233a964ea55189ba5eba1a3dc1a24ae9db38f555eea6ef0bce0bef1aff7c36ab",
+  "responses_sha256": "e2b4bfabd3ecc9dcd57efc295ba4e0a536b32d9a02f60c39841637f1a1f20f7f",
+  "review_mode": "user_confirmed_assisted_initial_review",
+  "publication_note": "Export of confirmed scores; local paths and per-case personal timestamps omitted. Not an independent blind review.",
+  "cases": [
+    {
+      "case_id": "K1-a",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "一线城市每人每晚不超过八百元",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "匹配规章制度"
+    },
+    {
+      "case_id": "K1-b",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "一线城市每人每晚不超过八百元",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户对展示的回答与来源选择“全部符合：正确、无编造、引用支持、依据齐全”。辅助证据定位见上方；此处记录用户初评，不代表 Codex 抽查结论。"
+    },
+    {
+      "case_id": "K2-a",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "出差结束后三十日内提交",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户对展示的回答与来源选择“全部符合：正确、无编造、引用支持、依据齐全”。辅助证据定位见上方；此处记录用户初评，不代表 Codex 抽查结论。"
+    },
+    {
+      "case_id": "K2-b",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "出差结束后三十日内提交",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "匹配规章制度"
+    },
+    {
+      "case_id": "K3-a",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "超过五千元至二万元的由部门总监审批",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户对展示的回答与来源选择“全部符合：正确、无编造、引用支持、依据齐全”。辅助证据定位见上方；此处记录用户初评，不代表 Codex 抽查结论。"
+    },
+    {
+      "case_id": "K3-b",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "超过五千元至二万元的由部门总监审批",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户对已展示回答和来源选择“全部符合：正确、无编造、引用支持、依据齐全”。这是用户初评记录，不代表 Codex 抽查结论。"
+    },
+    {
+      "case_id": "K4-a",
+      "fact_accuracy": "FAIL",
+      "fabrication": "MAJOR",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "N/A",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "与出差事由无关的个人消费",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "超出规定标准且未获书面同意的部分",
+          "covered": true,
+          "source_numbers": [
+            2
+          ]
+        },
+        {
+          "fact": "未按规定事先申请且未补办手续的出差费用",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "发票不合规、内容与实际不符或重复提交的费用",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "因个人原因导致的改签、退票手续费",
+          "covered": false,
+          "source_numbers": []
+        }
+      ],
+      "relevant_source_numbers": [
+        2
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户先指出有问题，随后逐项确认：只检索到第②项，回答未列出五项关键事实，事实正确性 FAIL；无引用，引用支持 N/A（程序 ref_exists 仍为 FAIL）；拒答项按题型 N/A。对于已有第②项却声称仅有标题的表述，用户选定 MAJOR，认为属于实质性的无依据或错误断言。以上为经过交互说明后的用户初评，不是独立盲评。关联争议处理：用户曾在 K4-b 质疑共用的原文或预期清单并要求暂停；重新展示原文后，用户于本轮明确接受该实验原文及五项评分依据，原文争议已澄清。本题原有用户评分保持不变；后续评分抽查另行进行。"
+    },
+    {
+      "case_id": "K4-b",
+      "fact_accuracy": "FAIL",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "与出差事由无关的个人消费",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "超出规定标准且未获书面同意的部分",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "未按规定事先申请且未补办手续的出差费用",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "发票不合规、内容与实际不符或重复提交的费用",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "因个人原因导致的改签、退票手续费",
+          "covered": false,
+          "source_numbers": []
+        }
+      ],
+      "relevant_source_numbers": [],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户先选择有问题，随后指出“回答似乎出现了不应该存在的内容，比如因为个人原因产生的退票费”，并澄清质疑的是原文或预期清单，要求暂停。重新展示 eval-travel-v1.md 第二十一条全文、本次实际来源及模型完整回答后，用户明确选择“接受这份实验原文，并同意上述分项评分”。由此恢复并完成本题：检索覆盖 0/5；事实正确性 FAIL（未列出五项关键事实）；编造 NONE（模型未提及退票费，也未补编清单）；引用 FULL（支持其对本次资料的说明，不表示答出了清单）；拒答项按题型 N/A。暂停和澄清经过保留，原文及预期清单不作改写。本记录为经过交互说明后的用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "K5-a",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "需试用期届满转为正式员工才可领用",
+          "covered": true,
+          "source_numbers": [
+            2
+          ]
+        },
+        {
+          "fact": "试用期内可申请临时借用，不超过三个月",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1,
+        2
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户交互选择“全部符合：正确、无编造、引用支持、依据齐全”，据此记录 PASS / NONE / FULL，正常业务问答的拒答项记 N/A。原始回答及来源已完整展示，来源编号由 Codex 辅助定位；本记录为交互用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "K5-b",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "需试用期届满转为正式员工才可领用",
+          "covered": true,
+          "source_numbers": [
+            2
+          ]
+        },
+        {
+          "fact": "试用期内可申请临时借用，不超过三个月",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1,
+        2
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户交互选择“全部符合：正确、无编造、引用支持、依据齐全”，据此记录 PASS / NONE / FULL，正常业务问答的拒答项记 N/A。原始回答及来源已完整展示，来源编号由 Codex 辅助定位；本记录为交互用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "K6-a",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "在办理离职手续前的最后五个工作日内归还全部设备，不含办理手续当日",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户交互选择“全部符合：正确、无编造、引用支持、依据齐全”，据此记录 PASS / NONE / FULL，正常业务问答的拒答项记 N/A。原始回答及来源已完整展示，来源编号由 Codex 辅助定位；本记录为交互用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "K6-b",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "在办理离职手续前的最后五个工作日内归还全部设备，不含办理手续当日",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户交互选择“全部符合：正确、无编造、引用支持、依据齐全”，据此记录 PASS / NONE / FULL，正常业务问答的拒答项记 N/A。原始回答及来源正文已展示，来源编号由 Codex 辅助定位；本记录为交互用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "K7-a",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "影响单个业务系统或部门范围内多个终端，或涉及少量内部信息公开，业务需局部降级",
+          "covered": true,
+          "source_numbers": [
+            3
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        3
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户交互选择“全部符合：正确、无编造、引用支持、依据齐全”，据此记录 PASS / NONE / FULL，正常业务问答的拒答项记 N/A。原始回答及来源正文已展示，来源编号由 Codex 辅助定位；本记录为交互用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "K7-b",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "影响单个业务系统或部门范围内多个终端，或涉及少量内部信息公开，业务需局部降级",
+          "covered": true,
+          "source_numbers": [
+            2
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        2
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户交互选择“全部符合：正确、无编造、引用支持、依据齐全”，据此记录 PASS / NONE / FULL，正常业务问答的拒答项记 N/A。原始回答及来源正文已展示，来源编号由 Codex 辅助定位；本记录为交互用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "K8-a",
+      "fact_accuracy": "FAIL",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "报信息安全部负责人与分管高管",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "同时通报法务与公关部门",
+          "covered": false,
+          "source_numbers": []
+        }
+      ],
+      "relevant_source_numbers": [],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户原始意见为“部分正确，缺少了需要报告给分管高管，同时缺少了补充要点”。解释现行规则后，用户明确同意按分项记录：关键事实缺失记 FAIL，检索覆盖 0/2；已说出的报告内容有来源 [3] 支持，编造 NONE、引用 FULL、拒答项 N/A。原始意见保留，以上为交互确认后的初评，不是独立盲评。"
+    },
+    {
+      "case_id": "K8-b",
+      "fact_accuracy": "FAIL",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "NO",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "报信息安全部负责人与分管高管",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "同时通报法务与公关部门",
+          "covered": false,
+          "source_numbers": []
+        }
+      ],
+      "relevant_source_numbers": [],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户先选择有问题，继而确认事实 FAIL、检索覆盖 0/2、拒答项 N/A，将编造和引用暂留待复核。补充展示完整文档第八条（本次未取回）及本次实际引文后，用户最终选择“不认定编造，但关键引用不足：NONE／NO”。据此将编造由 REVIEW 更新为 NONE，引用支持记 NO；未取回的第八条不能当作本次来源 [1]。其余已确认分项不变。以上为经过补充资料和交互说明后的用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "X1-a",
+      "fact_accuracy": "FAIL",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "三十日内提交",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        },
+        {
+          "fact": "六千元由部门总监审批",
+          "covered": false,
+          "source_numbers": []
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户初步选择“全部符合：正确、无编造、引用支持、依据齐全”。展示关键缺项后，用户明确选择“同意修订，第二个关键问题没有答出”。最终按用户确认记录：事实正确性 FAIL，检索覆盖 1/2，编造 NONE，引用 FULL，拒答项 N/A。回答已有陈述得到对应来源支持，但没有答出六千元的审批人；原始选择保留在此，以上为交互确认后的初评，不是独立盲评。"
+    },
+    {
+      "case_id": "X1-b",
+      "fact_accuracy": "FAIL",
+      "fabrication": "MAJOR",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "NO",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "三十日内提交",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        },
+        {
+          "fact": "六千元由部门总监审批",
+          "covered": true,
+          "source_numbers": [
+            3
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1,
+        3
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意：新增审批步骤有实质问题，按拟议分项记录”。回答把分金额的审批权限改成先直属经理、再部门总监的两级流程，新增关键审批步骤无来源支持。因此事实正确性 FAIL、编造 MAJOR、引用 NO、拒答项 N/A；检索覆盖仍为 2/2。以上为展示拟议分项后的用户交互确认，不是独立盲评。"
+    },
+    {
+      "case_id": "X2-a",
+      "fact_accuracy": "FAIL",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "试用期届满、岗位需要、名下无同类设备未归还",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "技术序列单价上限一万二千元（非技术序列为八千元）",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意以上分项：缺少领用条件，其余表述有依据”。关键领用条件未答出，事实正确性 FAIL；配置、超标审批及换新说明有对应来源，编造 NONE、引用 FULL；原始文档有答案，拒答项按题型 N/A。以上为展示拟议分项后的用户交互确认，不是独立盲评。"
+    },
+    {
+      "case_id": "X2-b",
+      "fact_accuracy": "FAIL",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "试用期届满、岗位需要、名下无同类设备未归还",
+          "covered": false,
+          "source_numbers": []
+        },
+        {
+          "fact": "技术序列单价上限一万二千元（非技术序列为八千元）",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意以上分项：只答了配置，缺少领用资格”。只回答配置，没有回答关键领用资格，事实正确性 FAIL；已给出的配置有依据，编造 NONE、引用 FULL、拒答项 N/A。以上为展示拟议分项后的用户交互确认，不是独立盲评。"
+    },
+    {
+      "case_id": "X3-a",
+      "fact_accuracy": "FAIL",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "PARTIAL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "四小时内上报",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        },
+        {
+          "fact": "报信息安全部负责人并抄送受影响部门负责人",
+          "covered": false,
+          "source_numbers": []
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户先指出“回答缺少了报信息安全部负责人，并抄送受影响部门负责人”，据既定规则记录事实 FAIL、拒答项 N/A。随后明确选择“覆盖1/2、无编造；引用PARTIAL”。来源 [1] 支持时限，未取回上报对象；回答没有补编对象，对本次资料缺项的说明符合实际，编造 NONE。时限引用充分，但第二句的来源 [3] 仅为引导句，用户将整题引用支持判为 PARTIAL。以上为交互确认后的用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "X3-b",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "四小时内上报",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        },
+        {
+          "fact": "报信息安全部负责人并抄送受影响部门负责人",
+          "covered": true,
+          "source_numbers": [
+            2
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1,
+        2
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意以上分项：全部符合”。两项关键事实均正确，来源 [1] 与 [2] 分别支持时限、上报及抄送对象，检索覆盖 2/2；事实正确性 PASS、编造 NONE、引用 FULL、拒答项 N/A。以上为展示拟议分项后的用户交互确认，不是独立盲评。"
+    },
+    {
+      "case_id": "N1",
+      "fact_accuracy": "N/A",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "APPROPRIATE",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [],
+      "relevant_source_numbers": [],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意：拒答恰当、无编造、引用支持”。原文没有到账时长；回答说明信息缺失，未将审批处理的三个工作日当作到账时间，拒答 APPROPRIATE、编造 NONE、引用 FULL。资料不足题的事实正确性、检索覆盖和 Hit 均为 N/A。以上为展示拟议分项后的用户交互确认，不是独立盲评。"
+    },
+    {
+      "case_id": "N2",
+      "fact_accuracy": "N/A",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "APPROPRIATE",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [],
+      "relevant_source_numbers": [],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意：拒答恰当、无编造、引用支持”。回答说明未提及差旅补贴及发放方式，没有自行补出补贴金额、渠道，也未把未提及改写为明确没有补贴；对已有申请和报销条款的说明有对应引用。据此记录拒答 APPROPRIATE、编造 NONE、引用 FULL；资料不足题的事实正确性、检索覆盖和 Hit 均为 N/A。以上为展示拟议分项后的用户交互确认，不是独立盲评。"
+    },
+    {
+      "case_id": "N3",
+      "fact_accuracy": "N/A",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "APPROPRIATE",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [],
+      "relevant_source_numbers": [],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意：拒答恰当、无编造、引用支持”。回答说明缺少人为损坏的维修责任条款，没有将超期未续保的部门预算规定套用于人为损坏；对三个来源的说明相符。据此记录拒答 APPROPRIATE、编造 NONE、引用 FULL；资料不足题的事实正确性、检索覆盖和 Hit 均为 N/A。以上为展示拟议分项后的用户交互确认，不是独立盲评。"
+    },
+    {
+      "case_id": "N4",
+      "fact_accuracy": "N/A",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "APPROPRIATE",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [],
+      "relevant_source_numbers": [],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意：拒答恰当、无编造、引用支持”。回答明确缺少处罚措施，没有补编警告、罚款、扣绩效等惩戒规定；对已有分级及时限条款的说明有对应引用。据此记录拒答 APPROPRIATE、编造 NONE、引用 FULL；资料不足题的事实正确性、检索覆盖和 Hit 均为 N/A。以上为展示拟议分项后的用户交互确认，不是独立盲评。"
+    },
+    {
+      "case_id": "N5",
+      "fact_accuracy": "N/A",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "APPROPRIATE",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [],
+      "relevant_source_numbers": [],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意：拒答恰当、无编造、引用支持”。回答说明没有重新申请的时间或条件，未把新供应商合作满一年可升级的规定当作重新申请等待期；移出合格名录由来源 [3] 支持。拒答 APPROPRIATE、编造 NONE、引用 FULL；事实正确性、检索覆盖和 Hit 为 N/A。以上为交互确认后的用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "B1",
+      "fact_accuracy": "PASS",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "FULL",
+      "boundary_message_accuracy": "N/A",
+      "evidence": [
+        {
+          "fact": "一线城市每人每晚不超过一千元",
+          "covered": true,
+          "source_numbers": [
+            1
+          ]
+        }
+      ],
+      "relevant_source_numbers": [
+        1
+      ],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意以上分项：按新版回答，全部符合”。查询日期 2026-07-01，返回状态 ok、版本标签 v2、文件 eval-travel-v2.md，元数据显示生效日 2026-06-01。来源 [1] 支持一线城市每人每晚不超过一千元；检索覆盖 1/1，事实正确性 PASS、编造 NONE、引用 FULL、拒答项 N/A。版本标签及返回来源相符不等于已完成完整文件内容身份校验。以上为交互确认后的用户初评，不是独立盲评。"
+    },
+    {
+      "case_id": "B2",
+      "fact_accuracy": "N/A",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "N/A",
+      "boundary_message_accuracy": "不准确",
+      "evidence": [],
+      "relevant_source_numbers": [],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“状态正确，但提示应说明范围不匹配；无补编”。固定响应 status=no_data 与预期一致，无版本、候选及来源。查询 scope=all，文档 scope=dept-fin，日期在该部门文档有效期内，不匹配的是范围；“没有找到该日期适用的文档资料”未准确说明这一原因，边界提示记不准确（范围原因提示不足），不是状态路由失败。无补编记 NONE；生成答案正确性、语义拒答、引用、检索覆盖和 Hit 均 N/A，不计入模型生成质量。保留原始响应，仅记录提示改进项。"
+    },
+    {
+      "case_id": "B3",
+      "fact_accuracy": "N/A",
+      "fabrication": "NONE",
+      "refusal_appropriateness": "N/A",
+      "ref_supports": "N/A",
+      "boundary_message_accuracy": "准确",
+      "evidence": [],
+      "relevant_source_numbers": [],
+      "reviewer": "author (AI-assisted)",
+      "reviewed_at": "2026-11-05",
+      "notes": "用户明确选择“同意：状态正确、提示准确、无补编”。查询日期 2025-12-01 早于差旅 v1（2026-01-01）及 v2（2026-06-01）的生效日；固定响应 no_data 与预期一致，候选和来源为空。提示“没有找到该日期适用的文档资料”准确，无补编 NONE。生成答案正确性、语义拒答、引用、检索覆盖和 Hit 均 N/A，不进入模型生成质量统计。"
+    }
+  ]
+}

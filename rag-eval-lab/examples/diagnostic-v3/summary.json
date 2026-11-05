@@ -1,0 +1,95 @@
+{
+  "questions_sha256": "233a964ea55189ba5eba1a3dc1a24ae9db38f555eea6ef0bce0bef1aff7c36ab",
+  "responses_sha256": "e2b4bfabd3ecc9dcd57efc295ba4e0a536b32d9a02f60c39841637f1a1f20f7f",
+  "review_sha256": "384a72f905ae3220e08fb68c7c7df272c8a9a2ee1608986681f374a4e6829af6",
+  "kind": "separate_dimensions_no_total_score",
+  "groups": {
+    "answerable": {
+      "count": 23,
+      "fact_accuracy": {
+        "PASS": 14,
+        "FAIL": 9
+      },
+      "fabrication": {
+        "NONE": 21,
+        "MAJOR": 2
+      },
+      "refusal_appropriateness": {
+        "N/A": 23
+      },
+      "ref_supports": {
+        "FULL": 19,
+        "N/A": 1,
+        "NO": 2,
+        "PARTIAL": 1
+      }
+    },
+    "insufficient": {
+      "count": 5,
+      "fact_accuracy": {
+        "N/A": 5
+      },
+      "fabrication": {
+        "NONE": 5
+      },
+      "refusal_appropriateness": {
+        "APPROPRIATE": 5
+      },
+      "ref_supports": {
+        "FULL": 5
+      }
+    },
+    "boundary_no_data": {
+      "count": 2,
+      "fact_accuracy": {
+        "N/A": 2
+      },
+      "fabrication": {
+        "NONE": 2
+      },
+      "refusal_appropriateness": {
+        "N/A": 2
+      },
+      "ref_supports": {
+        "N/A": 2
+      }
+    }
+  },
+  "fact_coverage": {
+    "cases": {
+      "full": 15,
+      "partial": 5,
+      "zero": 3
+    },
+    "covered_facts": 24,
+    "required_facts": 41
+  },
+  "boundary_messages": {
+    "不准确": 1,
+    "准确": 1
+  },
+  "paired_field_differences": {
+    "K1": [],
+    "K2": [],
+    "K3": [],
+    "K4": [
+      "fabrication",
+      "ref_supports"
+    ],
+    "K5": [],
+    "K6": [],
+    "K7": [],
+    "K8": [
+      "ref_supports"
+    ],
+    "X1": [
+      "fabrication",
+      "ref_supports"
+    ],
+    "X2": [],
+    "X3": [
+      "fact_accuracy",
+      "ref_supports"
+    ]
+  }
+}

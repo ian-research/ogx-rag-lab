@@ -1,0 +1,125 @@
+{
+  "questions_sha256": "233a964ea55189ba5eba1a3dc1a24ae9db38f555eea6ef0bce0bef1aff7c36ab",
+  "responses_sha256": "e2b4bfabd3ecc9dcd57efc295ba4e0a536b32d9a02f60c39841637f1a1f20f7f",
+  "protocol": "scheme-b-six-review-v1",
+  "run_id": "20261104T170909Z-7595b62b",
+  "seed": "5a897f8069735b6c140d05034b4b6ce935ff120f7baf62e623113c564c7e7a59",
+  "seed_input": "scheme-b-six-review-v1\n20261104T170909Z-7595b62b\n233a964ea55189ba5eba1a3dc1a24ae9db38f555eea6ef0bce0bef1aff7c36ab\ne2b4bfabd3ecc9dcd57efc295ba4e0a536b32d9a02f60c39841637f1a1f20f7f",
+  "quotas": {
+    "paired_knowledge": 1,
+    "cross_chunk": 2,
+    "insufficient": 1,
+    "boundary": 1
+  },
+  "ranked_candidates": {
+    "paired_knowledge": [
+      {
+        "unit": "K5",
+        "digest": "0d43d992b7ba9d5cd8a3befd60e190fe1b4e03b265ba9d36d64db113f178486b"
+      },
+      {
+        "unit": "K6",
+        "digest": "1eebdd5b19af624fbc3e6a95c9242cc1fc4cdfd44678ac97d9df411ec9e05282"
+      },
+      {
+        "unit": "K2",
+        "digest": "7407a5d8df1f8a8ccea57380d743b3dc452d4b371dae191d150a7a0ae166fbde"
+      },
+      {
+        "unit": "K8",
+        "digest": "782b5958cd92c34bf38123f5abfbd5e3f556337dbe95e5feb60c2a48aae2b500"
+      },
+      {
+        "unit": "K1",
+        "digest": "7f50f9fd877ee8ad0497549cad077c30a16116bd0dac3e1ca22c914116058159"
+      },
+      {
+        "unit": "K3",
+        "digest": "8e177f54d13093094d15ec9a45a6c534022536b9c7a543865817ade401e9b714"
+      },
+      {
+        "unit": "K7",
+        "digest": "952eca0e52d3607094cf11a80b7c42486ae3928cdb4b985cc20290aab49dbc2d"
+      }
+    ],
+    "cross_chunk": [
+      {
+        "unit": "K4-a",
+        "digest": "0b95d390070302f16c74f39d1d98487d6fe6da0420f16a5be9627ba667092bde"
+      },
+      {
+        "unit": "X1-a",
+        "digest": "6610d986480b26513c6f7ca37d862bcc44fff4ebc678743490ba58470e9c0347"
+      },
+      {
+        "unit": "X1-b",
+        "digest": "68abb6c5f7edd7e96e99762c106d799fe5ea12466b246240e3e9743bad65c770"
+      },
+      {
+        "unit": "X3-b",
+        "digest": "6b92f8a806093abd242e953346e1bb4ad3d5da20f57a5abb8f52e5d521d415ea"
+      },
+      {
+        "unit": "X3-a",
+        "digest": "711f5a10e663bb986da59864ce92865e581a296984a7ec55e3a6e0758f0db6ae"
+      },
+      {
+        "unit": "X2-b",
+        "digest": "804624f183472396f3976c0a58855236860905ba0c5bc77715995c0accfdc7ad"
+      },
+      {
+        "unit": "X2-a",
+        "digest": "93948ec0e146b7a0f37ec09affc3a8f2c395b37f5e96e0fe88b6df83074ae039"
+      },
+      {
+        "unit": "K4-b",
+        "digest": "f01326385d80d9fc853c0264e96f4bbc8552804e7c9e0e0841d29d2712d74c51"
+      }
+    ],
+    "insufficient": [
+      {
+        "unit": "N2",
+        "digest": "063cc29b4a76033279fc0569914af5e302979330ddb4e96f682fc04be245f8a1"
+      },
+      {
+        "unit": "N5",
+        "digest": "3b86b8cbd01f64510c9967a8a50173c508bd7f92f0163cc8a2fd64d6c8c1f283"
+      },
+      {
+        "unit": "N1",
+        "digest": "46e704c6085c7c41c6cb53de28cbff8b37e2f6452ed7f8507f1a7151761d7d25"
+      },
+      {
+        "unit": "N3",
+        "digest": "8f2f99ae554b6e258f9c9c537fcbfd838c143cbf8da7c23f8c51302a36b4b069"
+      },
+      {
+        "unit": "N4",
+        "digest": "f5c700cf33f4b1de92e81eaa41401429a05164d1365667564cb3970af0c7029d"
+      }
+    ],
+    "boundary": [
+      {
+        "unit": "B3",
+        "digest": "3d3553e56f340f3036ff9774bcf7e8bcbacd6e7b7351c21f37a9698eb51774ff"
+      },
+      {
+        "unit": "B2",
+        "digest": "9aa564443c1ce257c9d1168d3986e1fb7fa1ce838b016239542b869459d74d7c"
+      },
+      {
+        "unit": "B1",
+        "digest": "b21718e7b2e0b880143d0f76e4d7e22b46fcfa76435b743e1be5d1fe6f141d68"
+      }
+    ]
+  },
+  "selected_case_ids": [
+    "K5-a",
+    "K5-b",
+    "K4-a",
+    "X1-a",
+    "N2",
+    "B3"
+  ],
+  "limitation": "Selection is deterministic, not semantic grading. Reproducibility does not establish independent or blind review."
+}

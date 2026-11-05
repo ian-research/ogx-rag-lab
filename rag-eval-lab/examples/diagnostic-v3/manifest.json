@@ -1,0 +1,109 @@
+{
+  "api": "http://127.0.0.1:8089",
+  "question_sha256": "233a964ea55189ba5eba1a3dc1a24ae9db38f555eea6ef0bce0bef1aff7c36ab",
+  "environment": {
+    "captured_at": "2026-11-04T17:09:04Z",
+    "dataset": "dataset-v3",
+    "dataset_version": "v3-user-confirmed-20261105",
+    "service_commit": "86ba3c0b3671717a3aa366f2f8c9231f37aa0b29",
+    "host": {
+      "os": "Red Hat Enterprise Linux 10.2 (Coughlan)",
+      "kernel": "6.12.0-211.53.1.el10_2.x86_64",
+      "gpu": "NVIDIA L40S",
+      "driver": "610.43.02"
+    },
+    "models": {
+      "generation": "Qwen/Qwen3.5-9B",
+      "generation_revision": "c202236235762e1c871ad0ccb60c8ee5ba337b9a",
+      "embedding": "BAAI/bge-small-zh-v1.5",
+      "embedding_revision": "7999e1d3359715c523056ef9478215996d62a620",
+      "embedding_dimension": 512,
+      "served_model_name": "rag-llm"
+    },
+    "generation_settings": {
+      "temperature": 0.7,
+      "top_p": 0.8,
+      "max_tokens": 512,
+      "source": "version_app.py 固定值，未通过请求参数修改"
+    },
+    "retrieval": {
+      "k_max_chunks": 3,
+      "source": "version_app.py 固定值；本轮未改动"
+    },
+    "documents": {
+      "eval-device.md": "20d76083d6e16ff3baecccf01bd8e78396c8f2727448b550c577d3539469ec0c",
+      "eval-security.md": "b4a0d2ce22bd5080013b433709824711d87e3dbb2a42105d54643af7c0caae9f",
+      "eval-travel-v1.md": "3e9d3758b443a1c4762328cf4674bcd96441e46a78424cb22ed41b560937e96b",
+      "eval-travel-v2.md": "f8010dcf2c7c8c39b260423d59709b475985c9b53e69c2a7580f0f5831dec999",
+      "eval-vendor.md": "905c4a20650f47333dea01f6b8c25c19c667d5d9711a5a4e1805cca5084486a9"
+    },
+    "input_files": {
+      "questions.jsonl": "233a964ea55189ba5eba1a3dc1a24ae9db38f555eea6ef0bce0bef1aff7c36ab",
+      "input-sha256.json": "8d11c1e36fb95f0adfc527e8c81b60b2a8affd93139e87a4ba6150ac5f4736e7"
+    },
+    "published_versions": [
+      {
+        "policy_id": "eval3-device",
+        "version_label": "v1",
+        "version_id": "0c301419-b966-4736-99c2-20e0b91e9d0c",
+        "store_id": "vs_346aa41b-e861-4ae9-abd2-205a229d7979",
+        "scope": "all",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "publication_status": "published"
+      },
+      {
+        "policy_id": "eval3-security",
+        "version_label": "v1",
+        "version_id": "2821984a-acc8-42a0-ad72-f4f1399ce0ce",
+        "store_id": "vs_2bef6925-963d-49a0-a01d-48d4ca28e0b3",
+        "scope": "all",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "publication_status": "published"
+      },
+      {
+        "policy_id": "eval3-travel",
+        "version_label": "v1",
+        "version_id": "f8e0ba28-6861-4348-8ff5-2e3edce119ab",
+        "store_id": "vs_d79845d8-1dd5-4b9f-bee5-f21caef77d8d",
+        "scope": "all",
+        "valid_from": "2026-01-01",
+        "valid_to": "2026-06-01",
+        "publication_status": "published"
+      },
+      {
+        "policy_id": "eval3-travel",
+        "version_label": "v2",
+        "version_id": "a8ed914f-3ea0-4367-803c-77055b83dd6d",
+        "store_id": "vs_ed59acb7-1635-4fb4-afed-407e548c1a9d",
+        "scope": "all",
+        "valid_from": "2026-06-01",
+        "valid_to": null,
+        "publication_status": "published"
+      },
+      {
+        "policy_id": "eval3-vendor",
+        "version_label": "v1",
+        "version_id": "a16f635b-e401-4d2a-8da5-f0a2588e4a45",
+        "store_id": "vs_ca3a591d-1169-44e0-aba4-8b63a7cde529",
+        "scope": "dept-fin",
+        "valid_from": "2026-01-01",
+        "valid_to": null,
+        "publication_status": "published"
+      }
+    ],
+    "config_sha256": "461c22f3944b6130442527032253470f71f55c37b8102904a8f0dcac860c7865",
+    "rubric_version": "v0.4",
+    "user_confirmed": {
+      "K6": "在办理离职手续前的最后五个工作日内归还（不含办理当日）",
+      "K4": "保留完整清单题，要求答全第二十一条五项，五项均为必需事实"
+    },
+    "known_defects": [
+      "eval-device 第十七条误引第十八条（语料缺陷，未擅自修改）"
+    ],
+    "note": "由 DSH 在服务器实际取值生成；采集器不校验真实性。"
+  },
+  "collector_sha256": "00171b95c4f9a80f6647c6be330ef6a8fcc152328cd569ccb3473cb943214eb0",
+  "started_at": "2026-11-04T17:09:09.136529+00:00"
+}

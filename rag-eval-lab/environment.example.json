@@ -1,0 +1,95 @@
+{
+  "captured_at": "FILL_FROM_YOUR_SERVER",
+  "dataset": "dataset-v3",
+  "dataset_version": "v3-user-confirmed-20261105",
+  "service_commit": "FILL_FROM_YOUR_SERVER",
+  "host": {
+    "os": "FILL_FROM_YOUR_SERVER",
+    "kernel": "FILL_FROM_YOUR_SERVER",
+    "gpu": "FILL_FROM_YOUR_SERVER",
+    "driver": "FILL_FROM_YOUR_SERVER"
+  },
+  "models": {
+    "generation": "FILL_FROM_YOUR_SERVER",
+    "generation_revision": "FILL_FROM_YOUR_SERVER",
+    "embedding": "FILL_FROM_YOUR_SERVER",
+    "embedding_revision": "FILL_FROM_YOUR_SERVER",
+    "embedding_dimension": 512,
+    "served_model_name": "rag-llm"
+  },
+  "generation_settings": {
+    "temperature": 0.7,
+    "top_p": 0.8,
+    "max_tokens": 512,
+    "source": "version_app.py 固定值，未通过请求参数修改"
+  },
+  "retrieval": {
+    "k_max_chunks": 3,
+    "source": "version_app.py 固定值；本轮未改动"
+  },
+  "documents": {
+    "eval-device.md": "20d76083d6e16ff3baecccf01bd8e78396c8f2727448b550c577d3539469ec0c",
+    "eval-security.md": "b4a0d2ce22bd5080013b433709824711d87e3dbb2a42105d54643af7c0caae9f",
+    "eval-travel-v1.md": "3e9d3758b443a1c4762328cf4674bcd96441e46a78424cb22ed41b560937e96b",
+    "eval-travel-v2.md": "f8010dcf2c7c8c39b260423d59709b475985c9b53e69c2a7580f0f5831dec999",
+    "eval-vendor.md": "905c4a20650f47333dea01f6b8c25c19c667d5d9711a5a4e1805cca5084486a9"
+  },
+  "published_versions": [
+    {
+      "policy_id": "eval3-device",
+      "version_label": "v1",
+      "version_id": "FILL_FROM_YOUR_SERVER",
+      "store_id": "FILL_FROM_YOUR_SERVER",
+      "scope": "all",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "publication_status": "published"
+    },
+    {
+      "policy_id": "eval3-security",
+      "version_label": "v1",
+      "version_id": "FILL_FROM_YOUR_SERVER",
+      "store_id": "FILL_FROM_YOUR_SERVER",
+      "scope": "all",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "publication_status": "published"
+    },
+    {
+      "policy_id": "eval3-travel",
+      "version_label": "v1",
+      "version_id": "FILL_FROM_YOUR_SERVER",
+      "store_id": "FILL_FROM_YOUR_SERVER",
+      "scope": "all",
+      "valid_from": "2026-01-01",
+      "valid_to": "2026-06-01",
+      "publication_status": "published"
+    },
+    {
+      "policy_id": "eval3-travel",
+      "version_label": "v2",
+      "version_id": "FILL_FROM_YOUR_SERVER",
+      "store_id": "FILL_FROM_YOUR_SERVER",
+      "scope": "all",
+      "valid_from": "2026-06-01",
+      "valid_to": null,
+      "publication_status": "published"
+    },
+    {
+      "policy_id": "eval3-vendor",
+      "version_label": "v1",
+      "version_id": "FILL_FROM_YOUR_SERVER",
+      "store_id": "FILL_FROM_YOUR_SERVER",
+      "scope": "dept-fin",
+      "valid_from": "2026-01-01",
+      "valid_to": null,
+      "publication_status": "published"
+    }
+  ],
+  "config_sha256": "FILL_FROM_YOUR_SERVER",
+  "rubric_version": "confirmed-v3-20261105",
+  "known_defects": [
+    "eval-device 第十七条误引第十八条（语料缺陷，未擅自修改）"
+  ],
+  "note": "填写实际值；此文件只记录环境，不会更改服务器的模型、采样参数或k。"
+}

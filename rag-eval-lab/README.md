@@ -2,6 +2,8 @@
 
 复用第二篇的 8089 文档版本服务，顺序调用 `/api/ask`，保存完整响应，再检查版本、检索依据、答案和引用。工具不会自动把关键词命中当成回答正确，也不合成一个总分。
 
+![五步评测流程](figures/article-03-review-steps.png)
+
 ## 环境与文件
 
 - 新采集：先部署 [文档版本服务](../rag-version-lab/README.md)，确认 OGX、vLLM、CPU Embedding、pgvector 和 Worker 正常。继续使用原单张 L40S，不新增模型、容器或常驻服务。
@@ -82,7 +84,7 @@ python3 collect.py \
   --output-root runs
 ```
 
-最后一行打印新运行目录。把它赋给下方变量（这里的时间戳只作格式示意，须替换）：
+最后一行打印新运行目录。把它赋给下方变量（须替换为实际路径）。下面的 `evaluate.py` 是可选的提前程序检查；下一步 `review.py prepare` 也会执行同一套检查，并写入 `automatic-checks.json`，不必两次都跑：
 
 ```bash
 RUN='runs/实际输出的运行目录'
@@ -166,6 +168,10 @@ python3 review.py sample --run examples/diagnostic-v3 \
 ```
 
 预期事实评分为PASS14/FAIL9（仅23道有答案题），事实覆盖24/41，六题为K5-a、K5-b、K4-a、X1-a、N2、B3。它们只描述这组实验数据，不能推成通用模型准确率，也不是本次发布新跑出的效果提升。
+
+## 案例如何定位
+
+![三类实际诊断案例](figures/article-03-diagnosis-cases.png)
 
 ## 测试
 

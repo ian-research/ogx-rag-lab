@@ -1,0 +1,20 @@
+[Unit]
+Description=Article 04 bounded application-side tool loop
+After=network-online.target rag-vllm.service rag-ogx.service article04-mcp.service
+Wants=network-online.target article04-mcp.service
+# No Requires/BindsTo: keep the API alive to report MCP unavailability and recover.
+
+[Service]
+Type=simple
+WorkingDirectory=@APP_DIR@
+EnvironmentFile=@CONFIG_PATH@
+ExecStart=@APP_DIR@/.venv/bin/python -m uvicorn orchestrator:app --host 127.0.0.1 --port 8091 --workers 1 --no-access-log
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

@@ -22,3 +22,8 @@ image.lock
 cpu-runtime.constraints
 requirements.installed.lock
 version-record*/
+
+# Local publication drafts and internal handoffs
+/article-04-preparation/
+/article-04-publication/
+/SESSION_HANDOFF.txt

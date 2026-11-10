@@ -1,0 +1,15 @@
+.venv*/
+private/
+private-*/
+evidence/
+logs/
+.pytest_cache/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+*.key
+*.log
+*.zip
+*.tgz
+.DS_Store

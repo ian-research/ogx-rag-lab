@@ -1,0 +1,5 @@
+公开版完整部署步骤已整理到 DEPLOYMENT.md。
+首次安装：bash scripts/prepare.sh，然后 bash scripts/install.sh。
+已有安装迁移：在新目录准备环境后 bash scripts/switch-services.sh --switch。
+复测必须使用 Python：.venv/bin/python scripts/verify.py --phase baseline --as-of 2026-03-01。
+详细前置条件、凭据分发、配置、测试资料和回退步骤请阅读 DEPLOYMENT.md 与 TESTING.md。

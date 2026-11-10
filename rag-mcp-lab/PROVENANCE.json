@@ -1,0 +1,66 @@
+{
+  "source": "article-04-repair-r3b",
+  "source_manifest_sha256": "902c87b974b8c602faddf8f2902be8a2126d0dabf9e373d74f9821662532e8f0",
+  "upstream_commit": "7fc221dc7991a3d51432af4202fff6dae94b8d93",
+  "publication_date": "2026-11-10",
+  "scope": "Application, web UI, scripts, templates, locks, fixtures, upstream license and tests are byte-identical to the final server-tested export. Public documentation and ignore rules are curated separately.",
+  "unchanged_files_sha256": {
+    "LICENSE-UPSTREAM": "3f9c97f06ebd42940eac3b635ff03d278e5184f3b067a926e558206344a53e00",
+    "business_data.py": "44ce84fc8c0d214a79de25dbd4df8486f9e9fe8fd78fbff389d336264c3f6ab6",
+    "business_query.py": "fb641d4ffe38e802551ebe7bd7243cd7a9b240203f29ebd14e864df44bf90049",
+    "deploy/article04-mcp.service.in": "10f23f35a76b4fe835fa5b81897d7db18f62f0240bff094bf33e231278a6716e",
+    "deploy/article04-orchestrator.service.in": "75ff94ae490cd3c98c3d972649a2b2b2d24707cc4809622f55b7d6e51f02bd00",
+    "deploy/runtime.env.in": "a5da2e346599880d022d5ae46b3cad7adccbb2bb7f715baae6b46fde5523a9f2",
+    "docs/eval4-inject.md": "0a07c6cc3d3db802a0af0bfb56f4d29b1fd26cb542ce507fe9b1fbb06eab7ca7",
+    "init_private.py": "86d235e25fd1fa3c47bd57852a03c4e22d88566ac0306c340e89734bffc25e35",
+    "mcp_business_server.py": "beb975970161eba28524698b72f7cdc54571e86381298c59d97212f8b44d2324",
+    "orchestrator.py": "5086d08b616f64901cecd028758a9417c546976e03245ee3639cb1b733e6c1d7",
+    "requirements-test.in": "5335a58be87b3205a87b8b5b3d1f4238b7697a898291bb66a99bd634a46c2534",
+    "requirements-test.lock": "0e795768b017e3d70be6d13666f14863c7f58632dc129a7055a520b57c566356",
+    "requirements.in": "0e9d4cdd6e35ee6acbdf3559e3018e308228a12ff466fa477a4f03ca7fa9754b",
+    "requirements.lock": "1d40545911de0928f4e6787e901d6f9c02060b9d181bbb1c2bfebc286e9a3a7e",
+    "scripts/install.sh": "d5119dcdd3f695ca92429c002564d393ea99b916414caa070201556fcc9acd3f",
+    "scripts/lib-units.sh": "7f652905398d7f96c564323504677bdec89699b51b714bf1213ae88c89bcea36",
+    "scripts/manifest.py": "42ade6765362f64aa68aa1ea0aebdf9027078ca8c32adf377849e10d9a232f77",
+    "scripts/prepare.sh": "07c3682ac1bfe471921aee376c693c38573ada7e74ad3001768300e05c462e06",
+    "scripts/rollback.sh": "f5fad5b05fe97209d8fea2bf06ce41fdb4082ed3d143d1079b02f0a3da524bf0",
+    "scripts/scenarios.py": "199f896d67049ce135bc41e2abdb6ab60c8b4586e18c3772c6aa666a82664279",
+    "scripts/switch-services.sh": "d6aa1b91e6c4c3b327e502e272e6a90676a09542a9fe5df4834048f2f39500b4",
+    "scripts/verify.py": "a3c6d2c0a69c7d328a0431993fd58307ecd0c4f59473f5f9e6505680284974c9",
+    "security.py": "7d5708a75603e8406607f67a7ac833fcea03993d660f11583a169261b6557dea",
+    "settings.py": "98ceabc324433b9579b503c1f413681e759c271bedab2300a8f5c49c78125b3f",
+    "tests/conftest.py": "99cf2fa91c5fd84f6eba958d43c17e14e675d509f3474e44d75b01e2fbf19720",
+    "tests/test_business.py": "64f1c09848c58c92643bb47ab2768af0f853ca75fa0c8962e1f294d6839c67c4",
+    "tests/test_controls.py": "3625263d7d5c0f8e83f601a9689c07e94e058f0215ce34c2c87c377f66985eb8",
+    "tests/test_protocol.py": "c79052d53b3b71b04152ee7bbda0f75d35e5a71c9d3531064e8185c834ef7dc4",
+    "tests/test_r2_fixes.py": "f1899811cb307509ad27294e142dae6050c193f45d6224ecfb42e0f7f2502495",
+    "tests/test_r3_fixes.py": "40c8a1990da004c7725c8a8a2f13ba93bd83f92f860dc5a0f4ace9656591fe26",
+    "tool_contracts.py": "8a5441e725d12693f87f6c741fa22c6a1e97de4b923c238145eb106bd49b441e",
+    "transports.py": "af93fa4158def5a2a7ffa8175ce4d8a687c5cda4945d9bd81a0f7e4399197add",
+    "web/index.html": "96dfceafdb68013488676de3003fc939f43bf4794d3eb0520f567d2e9be6371c"
+  },
+  "server_validation": {
+    "date": "2026-11-09",
+    "environment": "RHEL 10.2 / Python 3.12.15",
+    "program_tests": {
+      "passed": 73,
+      "warnings": 19
+    },
+    "business_results": "Use r3 evidence: business code unchanged in r3b; final r3b smoke query was the 8089 document service, not a new 8091 end-to-end rerun.",
+    "not_performed": [
+      "full operating-system reinstall",
+      "machine reboot for the new services",
+      "concurrency/load test",
+      "rerun of article 3 thirty-question evaluation"
+    ]
+  },
+  "publication_validation": {
+    "date": "2026-11-10",
+    "environment": "macOS / Python 3.13.4",
+    "passed": 67,
+    "skipped": 6,
+    "warnings": 19,
+    "skip_reason": "Six deployment-script tests require root; their final server run is recorded above.",
+    "note": "The first restricted run could not bind loopback ports; the authorized local protocol rerun passed."
+  }
+}

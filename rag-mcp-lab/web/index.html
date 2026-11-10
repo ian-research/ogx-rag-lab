@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>设备、工单与文档查询</title>
+<style>
+:root{font-family:system-ui,-apple-system,"PingFang SC",sans-serif;color:#172b3a;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}main{max-width:960px;margin:36px auto;padding:0 20px}h1{font-size:28px;margin-bottom:8px}.muted{color:#596b7b;font-size:14px;line-height:1.8}.card{background:white;border:1px solid #dde5ec;border-radius:12px;padding:22px;margin-top:20px}h2{font-size:18px;margin-top:0}.row{display:flex;gap:12px;align-items:center;flex-wrap:wrap}label{display:block;margin-bottom:8px;font-size:14px}input,textarea,button{font:inherit;border:1px solid #c3cfd9;border-radius:7px;padding:11px}input[type=password]{min-width:250px;flex:1}textarea{width:100%;resize:vertical;min-height:90px}button{background:#126a57;color:white;cursor:pointer}button.secondary{background:white;color:#126a57}button:disabled{opacity:.5;cursor:wait}.answer{white-space:pre-wrap;line-height:1.9}pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f3f6fa;padding:12px;font-size:12px}summary{cursor:pointer}.error{color:#a13025}.badge{padding:4px 10px;background:#e8f4f0;border-radius:20px;font-size:13px}#examples{margin:12px 0}#examples button{font-size:13px;padding:7px 10px}#time-note{margin-top:8px}.hidden{display:none}
+</style></head><body><main>
+<span class="badge">AI 实践 · 只读 MCP 实验</span><h1>设备、工单与文档查询</h1>
+<p class="muted">查询自己的设备、工单进展，并结合已发布文档了解规定。这里使用演示数据，只提供查询。</p>
+<section class="card"><h2>当前会话</h2>
+<div id="login"><label for="credential">实验凭据（由管理员单独提供）</label><div class="row">
+<input id="credential" type="password" autocomplete="off" placeholder="粘贴你自己的实验凭据"><button id="connect">连接</button></div></div>
+<div id="connected" class="row hidden"><span id="identity"></span><button id="logout" class="secondary">退出</button></div>
+<div id="login-status" class="muted" role="status">凭据仅保留在当前页面内存中，刷新后需要重新连接。</div></section>
+<section class="card"><h2>提出问题</h2>
+<label for="asof">文档适用日期</label><input id="asof" type="date">
+<p id="time-note" class="muted">此日期只用于选择文档版本。设备和工单查询的是当前演示台账，不提供历史快照。</p>
+<div id="examples" class="row"><button class="secondary" data-q="我的笔记本是什么型号，什么时候买的？">查我的笔记本</button><button class="secondary" data-q="我想查一张工单的当前进展">查工单</button><button class="secondary" data-q="查一下我的设备，再对照设备文档，看能否确认符合换新条件？">设备与文档一起查</button></div>
+<label for="question">问题</label><textarea id="question" placeholder="例如：我的笔记本是什么型号，什么时候买的？"></textarea>
+<div class="row" style="margin-top:12px"><button id="send" disabled>查询</button><span id="status" class="muted" role="status">请先连接会话</span></div></section>
+<section class="card"><h2>回答</h2><div id="answer" class="answer">尚未查询</div><p id="metadata" class="muted"></p></section>
+<section class="card"><h2>查询依据与调用过程</h2><p class="muted">展开查看实际工具参数、返回记录和文档来源。流程正常结束仍需核对回答是否忠实于依据。</p><div id="steps">尚未查询</div></section>
+</main><script>
+const $=id=>document.getElementById(id);let credential='';let pendingRequest=null;
+const parts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Shanghai',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());
+const p=Object.fromEntries(parts.map(x=>[x.type,x.value]));$('asof').value=`${p.year}-${p.month}-${p.day}`;
+function signOut(){if(pendingRequest)pendingRequest.abort();credential='';$('credential').value='';$('login').classList.remove('hidden');$('connected').classList.add('hidden');$('send').disabled=true;$('identity').textContent='';$('answer').textContent='尚未查询';$('steps').textContent='尚未查询';$('metadata').textContent='';$('status').textContent='请先连接会话';}
+$('logout').onclick=signOut;
+$('connect').onclick=async()=>{const candidate=$('credential').value.trim();$('connect').disabled=true;try{const r=await fetch('/api/session',{headers:{Authorization:'Bearer '+candidate},cache:'no-store'});const d=await r.json();if(!r.ok)throw Error(d.detail||'连接失败');credential=candidate;$('credential').value='';$('identity').textContent=d.label+' · '+d.session_id;$('login').classList.add('hidden');$('connected').classList.remove('hidden');$('send').disabled=false;$('login-status').textContent='会话已连接，页面不会列出其他人的身份或凭据。';$('status').textContent='可以查询';}catch(e){$('login-status').textContent=e.message;}finally{$('connect').disabled=false;}};
+document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{$('question').value=b.dataset.q;});
+function renderSteps(steps){$('steps').replaceChildren();for(const s of steps){const detail=document.createElement('details'),title=document.createElement('summary'),body=document.createElement('pre');title.textContent=`${s.tool_name||s.kind} · ${s.status} · ${s.ms} ms`;body.textContent=JSON.stringify(s,null,2);detail.append(title,body);$('steps').append(detail);}}
+$('send').onclick=async()=>{const question=$('question').value.trim();if(!question||!credential)return;if(!$('asof').value){$('status').textContent='请选择文档适用日期';return;}const requestCredential=credential;pendingRequest=new AbortController();$('send').disabled=true;$('answer').classList.remove('error');$('answer').textContent='正在查询…';$('status').textContent='等待结果';$('steps').replaceChildren();$('metadata').textContent='';try{const r=await fetch('/api/ask',{method:'POST',signal:pendingRequest.signal,headers:{'Content-Type':'application/json',Authorization:'Bearer '+credential},body:JSON.stringify({question,as_of:$('asof').value})});const d=await r.json();if(credential!==requestCredential)return;$('answer').textContent=d.answer||d.message||d.detail||'查询失败';$('answer').classList.toggle('error',!r.ok);$('status').textContent=d.status==='ok'?'查询流程完成，请核对依据':(d.status||'请求失败');$('metadata').textContent=d.run_id?`记录 ${d.run_id} · 文档日期 ${d.as_of} · 查询时间 ${d.queried_at}`:'';renderSteps(d.steps||[]);}catch(e){if(e.name==='AbortError'||credential!==requestCredential)return;$('answer').textContent='无法连接查询服务，请检查服务状态。';$('answer').classList.add('error');$('status').textContent='连接失败';}finally{$('send').disabled=!credential;}};
+</script></body></html>

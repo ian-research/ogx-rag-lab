@@ -1,0 +1,19 @@
+[Unit]
+Description=Article 04 authenticated read-only MCP
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=@APP_DIR@
+EnvironmentFile=@CONFIG_PATH@
+ExecStart=@APP_DIR@/.venv/bin/python -m uvicorn mcp_business_server:app --host 127.0.0.1 --port 8090 --workers 1 --no-access-log
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

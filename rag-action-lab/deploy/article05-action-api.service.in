@@ -1,0 +1,17 @@
+[Unit]
+Description=Article 5 action lab: draft and controlled submission (loopback only)
+After=network-online.target
+Wants=article05-action-mcp.service
+
+[Service]
+Type=simple
+WorkingDirectory=@APP_DIR@
+EnvironmentFile=@CONFIG_PATH@
+ExecStart=@APP_DIR@/.venv/bin/python -m uvicorn action_api:app --host 127.0.0.1 --port 8092 --workers 1 --no-access-log
+Restart=on-failure
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

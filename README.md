@@ -2,11 +2,13 @@
 
 在 AWS RHEL 10 与单张 L40S 上搭建标准 RAG：vLLM 提供本地生成，OGX 接入 CPU Embedding 和 pgvector，自建上传应用完成 PDF、DOCX、Markdown、TXT 的后台解析、分块、入库及带来源问答。
 
-这是单机实验，服务只监听本机，通过 SSH 隧道访问。基础 RAG 未接登录或文档 ACL；第二阶段增加文档发布、有效期与适用范围管理，第四阶段另建带演示会话的只读 MCP 查询应用，尚未接企业 SSO 或做并发压测。
+这是单机实验，服务只监听本机，通过 SSH 隧道访问。基础 RAG 未接登录或文档 ACL；第二阶段增加文档发布、有效期与适用范围管理，第四阶段另建带演示会话的只读 MCP 查询应用，第五阶段增加页面确认后提交的模拟换新申请，尚未接企业 SSO 或做生产负载压测。
 
 ![部署架构](figures/architecture.png)
 
 ## 从这里开始
+
+- [第五篇：确认后提交换新申请](rag-action-lab/README.md)：草稿预览、明确确认、MCP 模拟写入、幂等与中断恢复；包含完整部署配置、锁文件和 58 项程序测试。
 
 - [第四篇：只读 MCP 查询](rag-mcp-lab/README.md)：查询本人设备、工单和适用文档；包含独立环境、systemd 安装配置、迁移回退及测试。
 
@@ -34,6 +36,7 @@ git rev-parse HEAD
 
 |目录|内容|
 |---|---|
+|rag-action-lab/|草稿、页面确认、模拟工单 MCP、持久状态及部署与恢复测试|
 |rag-mcp-lab/|只读 MCP、Web 查询、应用侧工具循环、部署脚本和测试|
 |rag-eval-lab/|30题评测、五份实验文档、操作手册与实际诊断记录|
 |rag-version-lab/|制度版本 API、后台 Worker、发布规则、独立数据及 53 项测试|
@@ -46,7 +49,7 @@ git rev-parse HEAD
 
 2026-10-27 记录：RHEL 10、L40S、vLLM 0.32.0、OGX 1.5.0、PostgreSQL 16.15、pgvector 0.8.7；CPU Embedding 为 bge-small-zh-v1.5（512 维）。版本号描述实验，不代表最新版本。
 
-仓库不含模型权重、数据库、真实业务文档、凭据或完整远端依赖锁。模型 revision 已由 DSH 复现记录补齐。第一阶段全栈服务已完成服务器重启验证（不包含第四篇新增服务）；第二阶段 Markdown 联调及 53 项自动化测试通过。Word Title 修复通过本地测试，远端重新入库仍需验收。
+仓库不含模型权重、数据库、真实业务文档或凭据；第四、第五篇子目录提供各自应用的带哈希依赖锁，不代表完整推理栈依赖锁。模型 revision 已由 DSH 复现记录补齐。第一阶段全栈服务已完成服务器重启验证（不包含第四、第五篇新增服务）；第二阶段 Markdown 联调及 53 项自动化测试通过。第五篇 r4 完成 58 项程序测试、27 项在线用例机器检查及三处进程中断恢复；这些计数不代表模型语义准确率。Word Title 修复通过本地测试，远端重新入库仍需验收。
 
 ## 测试
 
@@ -65,4 +68,4 @@ git rev-parse HEAD
 
 参考 [Red Hat AI Quickstarts RAG](https://github.com/rh-ai-quickstart/RAG)，并非其 Compose 原样部署；本仓库不含 OGX 或上游 RAG 的源码副本。
 
-第四篇部分设备数据与查询入口参考 [Red Hat IT Self Service Agent](https://github.com/rh-ai-quickstart/it-self-service-agent/tree/7fc221dc7991a3d51432af4202fff6dae94b8d93)，上游 MIT 声明随代码保留；新增代码继续采用 Apache-2.0。
+第四、第五篇部分设备数据与场景参考 [Red Hat IT Self Service Agent](https://github.com/rh-ai-quickstart/it-self-service-agent/tree/7fc221dc7991a3d51432af4202fff6dae94b8d93)，上游 MIT 声明随代码保留；新增代码继续采用 Apache-2.0。

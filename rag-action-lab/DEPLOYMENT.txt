@@ -1,0 +1,2 @@
+请阅读 DEPLOYMENT.md。首次 prepare/install，已有安装用 switch-services.sh --switch。
+状态与密钥使用代码目录之外的 STATE_DIR；不要运行未读过说明的迁移或故障脚本。

@@ -1,0 +1,20 @@
+[Unit]
+Description=Article 07 read-only observability analysis API
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=@APP_DIR@
+EnvironmentFile=@CONFIG_PATH@
+ExecStart=@APP_DIR@/.venv/bin/python -m uvicorn insight.app:app --host 127.0.0.1 --port @API_PORT@ --workers 1 --no-access-log
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=20
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

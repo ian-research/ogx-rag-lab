@@ -1,0 +1,21 @@
+{
+  "_fixture": "Synthetic page-schema fixture. No live request or credential.",
+  "status": "ok",
+  "elapsed_ms": 1,
+  "evidence_id": "E-fixture-latency",
+  "answer": "事实：这是合成页面测试。\n解释：只检查字段显示。\n证据：[E-fixture-latency]\n下一步检查：不执行。",
+  "answer_guard": {"sections_present": true, "citation_ok": true, "citation_supports": "unverified"},
+  "facts": {
+    "trace": {"trace_id": "00000000000000000000000000000000", "root_span": "POST /api/ask", "duration_ms": 2899.154, "span_count": 12},
+    "stages": {
+      "stages": [
+        {"stage": "model.loop", "count": 1, "total_ms": 2896.415, "max_ms": 2896.415},
+        {"stage": "model.chat", "count": 2, "total_ms": 2896.172, "max_ms": 1779.139},
+        {"stage": "tool.get_employee_laptop_info", "count": 1, "total_ms": 0.032, "max_ms": 0.032}
+      ],
+      "note": "合成数据；同一阶段可能包含并行或嵌套Span，各行不可相加。"
+    },
+    "http_and_business": {"http_status": 200, "tool_outcomes": {}, "details_returned": 2, "details_requested": 2}
+  },
+  "sources": []
+}

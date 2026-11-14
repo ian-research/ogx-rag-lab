@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>运维观测分析 · 实验</title>
+<style>
+:root { --ink:#1f2328; --muted:#57606a; --line:#d8dee4; --bg:#f6f8fa; --accent:#1f6f5c; --warn:#9a6700; --bad:#b42318; }
+* { box-sizing: border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.7 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif; }
+main { max-width:960px; margin:0 auto; padding:28px 20px 60px; }
+h1 { font-size:24px; margin:0 0 6px; }
+.sub { color:var(--muted); margin:0 0 20px; }
+.card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin-bottom:16px; }
+label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+input, select, textarea { width:100%; padding:9px 10px; border:1px solid var(--line); border-radius:6px; font:inherit; background:#fff; }
+textarea { min-height:64px; resize:vertical; }
+.row { display:flex; gap:12px; flex-wrap:wrap; }
+.row > div { flex:1 1 200px; }
+button { margin-top:14px; background:var(--accent); color:#fff; border:0; border-radius:6px; padding:10px 18px; font:inherit; cursor:pointer; }
+button:disabled { opacity:.55; cursor:default; }
+button.ghost { background:#fff; color:var(--ink); border:1px solid var(--line); }
+.tag { display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:#e7f2ee; color:var(--accent); }
+.tag.warn { background:#fff4d6; color:var(--warn); }
+.tag.bad { background:#fde8e7; color:var(--bad); }
+pre { background:#f6f8fa; border:1px solid var(--line); border-radius:6px; padding:12px; overflow:auto; font-size:13px; white-space:pre-wrap; }
+table { width:100%; border-collapse:collapse; font-size:14px; }
+th, td { text-align:left; padding:6px 8px; border-bottom:1px solid var(--line); }
+.muted { color:var(--muted); font-size:13px; }
+.hidden { display:none; }
+.answer h3 { margin:14px 0 4px; font-size:15px; }
+.answer p { margin:4px 0; white-space:pre-wrap; }
+</style>
+</head>
+<body>
+<main>
+  <h1>运维观测分析 · 实验</h1>
+  <p class="sub">只读入口。程序查询 Trace 与指标并完成换算，模型只负责解释；建议不会自动执行。</p>
+
+  <section class="card" id="authcard">
+    <div id="login">
+      <label>运维实验凭据（管理员单独分发）</label>
+      <input id="token" type="password" autocomplete="off" placeholder="粘贴凭据">
+      <button id="connect">连接</button>
+      <p class="muted">凭据仅保存在本页面内存，不写入日志。</p>
+    </div>
+    <div id="connected" class="hidden">
+      <span class="tag" id="identity">已连接</span>
+      <button class="ghost" id="disconnect" style="margin-left:10px;padding:4px 10px;">退出</button>
+      <p class="muted">查询范围由服务端限定；页面不提供任意查询语句输入。</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <label>问题类型</label>
+    <select id="qtype">
+      <option value="latency_breakdown">这次问答主要等在模型接口，还是文档或工具查询？</option>
+      <option value="failure_where">这次失败发生在哪一环？HTTP 成功就代表业务成功吗？</option>
+      <option value="window_requests">两个等长窗口的请求数有什么不同？</option>
+      <option value="capacity_gap">这次慢是不是 GPU 不足造成的？</option>
+    </select>
+    <div class="row">
+      <div><label>服务</label><input id="service" value="action-lab-api"></div>
+      <div><label>回看窗口（分钟）</label><input id="window" type="number" value="60" min="5" max="180"></div>
+    </div>
+    <label>问题</label>
+    <textarea id="question">这次请求主要时间花在哪里？</textarea>
+    <button id="run">分析</button>
+    <span class="muted" id="runhint"></span>
+  </section>
+
+  <section class="card hidden" id="answerCard">
+    <div style="display:flex;justify-content:space-between;align-items:center;">
+      <strong>解释</strong><span id="meta" class="muted"></span>
+    </div>
+    <div class="answer" id="answer"></div>
+  </section>
+
+  <section class="card hidden" id="factsCard">
+    <strong>程序计算的事实</strong>
+    <div id="facts"></div>
+  </section>
+
+  <section class="card hidden" id="sourceCard">
+    <strong>证据来源</strong>
+    <div id="sources"></div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let token = null;
+const show = (id, on) => $(id).classList.toggle('hidden', !on);
+
+$('connect').onclick = async () => {
+  token = $('token').value.trim();
+  if (token.length < 32) { alert('凭据格式不正确'); return; }
+  const r = await fetch('/api/whoami', { headers: { Authorization: `Bearer ${token}` } });
+  if (!r.ok) { alert('凭据未被接受'); return; }
+  const me = await r.json();
+  $('identity').textContent = `${me.name}（${me.role}）`;
+  show('login', false); show('connected', true);
+  $('token').value = '';
+};
+$('disconnect').onclick = () => { token = null; show('login', true); show('connected', false); };
+
+function renderAnswer(text) {
+  const box = $('answer'); box.innerHTML = '';
+  const parts = text.split(/\n(?=(?:一|二|三|四|#|\*\*)?\s*(?:观察到的事实|事实|解释|支持证据|证据|下一步检查|下一步)[：:])/);
+  parts.forEach(p => {
+    const m = p.match(/^\s*(?:#+\s*)?\**\s*(观察到的事实|事实|解释|支持证据|证据|下一步检查|下一步)[：:]/);
+    if (m) {
+      const h = document.createElement('h3'); h.textContent = m[1]; box.appendChild(h);
+      const body = document.createElement('p'); body.textContent = p.slice(m[0].length).trim(); box.appendChild(body);
+    } else if (p.trim()) {
+      const body = document.createElement('p'); body.textContent = p.trim(); box.appendChild(body);
+    }
+  });
+  if (!box.children.length) { const p = document.createElement('p'); p.textContent = text; box.appendChild(p); }
+}
+
+$('run').onclick = async () => {
+  if (!token) { alert('请先连接'); return; }
+  $('run').disabled = true; $('runhint').textContent = '分析中…';
+  try {
+    const body = {
+      question_type: $('qtype').value,
+      question: $('question').value.trim(),
+      service: $('service').value.trim(),
+      window_minutes: Number($('window').value)
+    };
+    const r = await fetch('/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+      body: JSON.stringify(body)
+    });
+    const data = await r.json();
+    if (!r.ok) { $('runhint').textContent = `失败：${data.detail || r.status}`; return; }
+    const status = data.status || 'unknown';
+    $('runhint').textContent = `${status === 'ok' ? '返回成功' : '分析未正常完成'}（${status}，${data.elapsed_ms} ms）`;
+    show('answerCard', true); show('factsCard', true); show('sourceCard', true);
+    renderAnswer(data.answer || '（模型没有返回内容）');
+    const g = data.answer_guard || {};
+    const citationLabel = g.citation_ok ? '编号已登记' : '编号检查未通过';
+    $('meta').textContent = `证据 ${data.evidence_id} · 结构 ${g.sections_present ? '完整' : '缺项'} · ${citationLabel}；支持关系待核对`;
+    const f = data.facts || {};
+    const table = document.createElement('table');
+    const row = (name, value) => {
+      const tr = document.createElement('tr');
+      [name, value].forEach(text => {
+        const td = document.createElement('td'); td.textContent = String(text); tr.appendChild(td);
+      });
+      table.appendChild(tr);
+    };
+    if (f.trace) row('Trace', `${f.trace.trace_id} · ${f.trace.root_span} · ${f.trace.duration_ms} ms · ${f.trace.span_count} Span`);
+    if (f.stages && Array.isArray(f.stages.stages)) {
+      f.stages.stages.forEach(s => row(s.stage, `${s.count} 次 · 合计 ${s.total_ms} ms · 最大 ${s.max_ms} ms`));
+      if (f.stages.note) row('阶段口径', f.stages.note);
+    }
+    if (f.windows) {
+      [['window_a', '窗口 A'], ['window_b', '窗口 B']].forEach(([key, label]) => {
+        const w = f.windows[key]; if (!w) return;
+        const pct = v => typeof v === 'number' ? `${(v * 100).toFixed(1)}%` : '未知';
+        row(label, `观测增量 ${w.delta_total ?? '未知'} 次 · ${w.series_count} 条序列 · 实际采样覆盖 ${pct(w.real_coverage_ratio)} · 最大缺口 ${w.real_max_gap_s ?? '未知'} 秒 · up 比例 ${pct(w.up_ratio)} · 重置 ${w.resets} 次 · ${w.usable ? '采样可用' : '采样不足'}`);
+      });
+      row('窗口对照', f.windows.comparable ? '满足本实验的采样可比条件；不能据此判断性能趋势。' : '不满足可比条件，只展示观测事实。');
+      if (f.windows.rule) row('可比规则', f.windows.rule);
+      if (f.windows.note) row('计数口径', f.windows.note);
+    }
+    if (f.http_and_business) {
+      row('HTTP 状态', f.http_and_business.http_status ?? '未知');
+      row('已采集的工具结果', JSON.stringify(f.http_and_business.tool_outcomes || {}));
+      row('详情采集', `${f.http_and_business.details_returned ?? '未知'}/${f.http_and_business.details_requested ?? '未知'}；详情取全不代表业务目标已验证`);
+    }
+    if (f.gpu_internal) row('GPU 内部', `${f.gpu_internal.available ? '有' : '没有'} · ${f.gpu_internal.note}`);
+    $('facts').replaceChildren(table);
+    $('sources').replaceChildren();
+    (data.sources || []).forEach(s => {
+      const div = document.createElement('div'); div.className = 'muted';
+      div.textContent = `${s.name} · ${String(s.sha256 || '').slice(0, 16)}…`;
+      $('sources').appendChild(div);
+    });
+  } catch (e) {
+    $('runhint').textContent = `错误：${e}`;
+  } finally {
+    $('run').disabled = false;
+  }
+};
+</script>
+</body>
+</html>

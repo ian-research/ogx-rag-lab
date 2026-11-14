@@ -1,0 +1,16 @@
+[Unit]
+Description=Article 07 Prometheus (pinned image, loopback only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStartPre=-/usr/bin/podman rm -f article07-prometheus
+ExecStart=/usr/bin/podman run --rm --name article07-prometheus --network=host --pull=never -v @STATE_DIR@/prometheus:/prometheus:z -v @STATE_DIR@/prometheus-config:/etc/prometheus:z @PROM_IMAGE@ --config.file=/etc/prometheus/prometheus.yml --storage.tsdb.path=/prometheus --storage.tsdb.retention.time=1d --web.listen-address=127.0.0.1:@PROM_PORT@
+ExecStop=/usr/bin/podman stop -t 10 article07-prometheus
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,17 @@
+{
+  "_fixture": "Synthetic page-schema fixture. No live metric capture.",
+  "status": "ok",
+  "elapsed_ms": 1,
+  "evidence_id": "E-fixture-windows",
+  "answer": "事实：合成增量为3和4。\n解释：只检查页面。\n证据：[E-fixture-windows]\n下一步检查：不执行。",
+  "answer_guard": {"sections_present": true, "citation_ok": true, "citation_supports": "unverified"},
+  "facts": {
+    "windows": {
+      "window_a": {"delta_total": 3, "series_count": 16, "real_coverage_ratio": 1, "real_max_gap_s": 15, "up_ratio": 1, "resets": 0, "usable": true},
+      "window_b": {"delta_total": 4, "series_count": 16, "real_coverage_ratio": 1, "real_max_gap_s": 15, "up_ratio": 1, "resets": 0, "usable": true},
+      "comparable": true,
+      "note": "合成页面fixture，不是实时观测结果。"
+    }
+  },
+  "sources": []
+}

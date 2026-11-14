@@ -2,11 +2,13 @@
 
 在 AWS RHEL 10 与单张 L40S 上搭建标准 RAG：vLLM 提供本地生成，OGX 接入 CPU Embedding 和 pgvector，自建上传应用完成 PDF、DOCX、Markdown、TXT 的后台解析、分块、入库及带来源问答。
 
-这是单机实验，服务只监听本机，通过 SSH 隧道访问。基础 RAG 未接登录或文档 ACL；第二阶段增加文档发布、有效期与适用范围管理，第四阶段另建带演示会话的只读 MCP 查询应用，第五阶段增加页面确认后提交的模拟换新申请，第六阶段为应用与 MCP 增加追踪、指标和关联日志。尚未接企业 SSO 或做生产负载压测。
+这是单机实验，服务只监听本机，通过 SSH 隧道访问。基础 RAG 未接登录或文档 ACL；第二阶段增加文档发布、有效期与适用范围管理，第四阶段另建带演示会话的只读 MCP 查询应用，第五阶段增加页面确认后提交的模拟换新申请，第六阶段为应用与 MCP 增加追踪、指标和关联日志，第七阶段让程序整理观测证据，再由原模型解释。尚未接企业 SSO 或做生产负载压测。
 
 ![部署架构](figures/architecture.png)
 
 ## 从这里开始
+
+- [第七篇：让 AI 解释链路与指标](rag-insight-lab/README.md)：Jaeger 原生 MCP、Prometheus、独立运维页面、冻结证据与模型解释；包含部署配置、两份哈希锁、42 项程序测试和可复现的源码打包工具。
 
 - [第六篇：追踪问答和申请流程](rag-observability-lab/README.md)：OpenTelemetry、Jaeger、关联日志与指标端点；包含独立部署、两份哈希锁、74 项程序测试及两项不调模型的在线补验。
 
@@ -38,6 +40,7 @@ git rev-parse HEAD
 
 |目录|内容|
 |---|---|
+|rag-insight-lab/|只读运维分析、Prometheus、Jaeger MCP 适配、证据保存与模型解释|
 |rag-observability-lab/|应用/MCP 追踪、Jaeger 托管、指标与日志、独立部署和定向补验|
 |rag-action-lab/|草稿、页面确认、模拟工单 MCP、持久状态及部署与恢复测试|
 |rag-mcp-lab/|只读 MCP、Web 查询、应用侧工具循环、部署脚本和测试|
@@ -52,7 +55,7 @@ git rev-parse HEAD
 
 2026-10-27 记录：RHEL 10、L40S、vLLM 0.32.0、OGX 1.5.0、PostgreSQL 16.15、pgvector 0.8.7；CPU Embedding 为 bge-small-zh-v1.5（512 维）。版本号描述实验，不代表最新版本。
 
-仓库不含模型权重、数据库、真实业务文档或凭据；第四、第五篇子目录提供各自应用的带哈希依赖锁，不代表完整推理栈依赖锁。模型 revision 已由 DSH 复现记录补齐。第一阶段全栈服务已完成服务器重启验证（不包含第四、第五篇新增服务）；第二阶段 Markdown 联调及 53 项自动化测试通过。第五篇 r4 完成 58 项程序测试、27 项在线用例机器检查及三处进程中断恢复；这些计数不代表模型语义准确率。Word Title 修复通过本地测试，远端重新入库仍需验收。
+仓库不含模型权重、数据库、真实业务文档或凭据；第四至第七篇子目录提供各自应用的带哈希依赖锁，不代表完整推理栈依赖锁。模型 revision 已由 DSH 复现记录补齐。第一阶段全栈服务已完成服务器重启验证（不包含后续新增服务）；第二阶段 Markdown 联调及 53 项自动化测试通过。第五篇 r4 完成 58 项程序测试、27 项在线用例机器检查及三处进程中断恢复；第七篇完成 42 项程序测试，并分别记录五类模型案例与页面回放范围。这些计数不代表模型语义准确率。Word Title 修复通过本地测试，远端重新入库仍需验收。
 
 ## 测试
 
@@ -72,3 +75,5 @@ git rev-parse HEAD
 参考 [Red Hat AI Quickstarts RAG](https://github.com/rh-ai-quickstart/RAG)，并非其 Compose 原样部署；本仓库不含 OGX 或上游 RAG 的源码副本。
 
 第四至第六篇部分设备数据与场景参考 [Red Hat IT Self Service Agent](https://github.com/rh-ai-quickstart/it-self-service-agent/tree/7fc221dc7991a3d51432af4202fff6dae94b8d93)，上游 MIT 声明随代码保留；新增代码继续采用 Apache-2.0。
+
+第七篇架构参考 [Red Hat AI Observability Summarizer](https://github.com/rh-ai-quickstart/ai-observability-summarizer/tree/f85933a15e5460d55f28ff05545b8b3f19fe99ce)，在现有单机环境实现只读分析，并实际使用 Jaeger 原生 MCP；不是完整 OpenShift 部署。

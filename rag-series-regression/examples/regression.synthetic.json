@@ -61,7 +61,14 @@
               "维修报价"
             ],
             "doc_snapshot": {
-              "status": "not_retrieved"
+              "status": "not_retrieved",
+              "policy_id": null,
+              "filename": null,
+              "version_label": null,
+              "valid_from": null,
+              "valid_to": null,
+              "heading": null,
+              "excerpt_sha256": null
             },
             "ticket_status": "pending_review"
           }

@@ -67,7 +67,18 @@ def run(source, cases_path, out, base='http://127.0.0.1:8321',
         raise ValueError('Eight verified remaining requests required; refusing partial collection')
     product=contract(Path(source));spec=json.loads(Path(cases_path).read_text())
     cases={c['id']:c for c in spec['cases']}
+    if len(cases)!=len(spec['cases']):raise ValueError('Duplicate case identifier')
     if any(cid not in cases for cid in IDS):raise ValueError('Missing required case')
+    # Validate and freeze the entire batch before the first billable request.
+    payloads={}
+    for cid in IDS:
+        case=cases[cid]
+        if not isinstance(case.get('question'),str) or not case['question'].strip():
+            raise ValueError('Each case requires a nonempty question')
+        seed=case.get('seed') or {}
+        if seed.get('tool') not in ('get_employee_laptop_info','search_documents') or not isinstance(seed.get('result'),dict):
+            raise ValueError('Each case requires a read-tool fixture')
+        payloads[cid]=encoded(build_request(case,spec,product,model))
     out=Path(out)
     if out.exists():raise FileExistsError('Use a fresh run directory; evidence is never overwritten')
     out.mkdir(parents=True,mode=0o700)
@@ -75,18 +86,21 @@ def run(source, cases_path, out, base='http://127.0.0.1:8321',
               'product_model_loop_sha256':BASELINE_SHA,'cases_source_sha256':digest(Path(cases_path).read_bytes()),
               'mode':'controlled_synthetic_read_tool_prelude_single_real_completion',
               'tool_execution':False,'max_model_requests':8,'requests_sent':0,
-              'dry_run':dry_run,'cases':[]}
+              'dry_run':dry_run,'collection_ok':None,'cases':[]}
     def checkpoint():
-        (out/'manifest.json').write_bytes(encoded(manifest))
+        temporary=out/'.manifest.json.tmp'
+        temporary.write_bytes(encoded(manifest))
+        temporary.replace(out/'manifest.json')
     checkpoint()
     with httpx.Client(timeout=120,trust_env=False,transport=transport) as client:
         for cid in IDS:
-            body=build_request(cases[cid],spec,product,model);raw=encoded(body)
+            raw=payloads[cid]
             prefix=out/cid;req_path=prefix.with_suffix('.request.json')
             req_path.write_bytes(raw)
             item={'case_id':cid,'request_sha256':digest(raw),
                   'synthetic_message_indices':[2,3,4],
-                  'seed_tool':cases[cid]['seed']['tool'],'state':'request_saved'}
+                  'seed_tool':cases[cid]['seed']['tool'],'state':'request_saved',
+                  'content':None,'finish_reason':None,'tool_proposals':[]}
             manifest['cases'].append(item);checkpoint()
             if dry_run:
                 item['state']='dry_run_not_sent';checkpoint();continue
@@ -98,16 +112,39 @@ def run(source, cases_path, out, base='http://127.0.0.1:8321',
                 prefix.with_suffix('.response.bin').write_bytes(response.content)
                 item.update(http_status=response.status_code,response_sha256=digest(response.content),state='received')
                 try:
-                    parsed=response.json();choice=(parsed.get('choices') or [{}])[0]
-                    message=choice.get('message') or {}
+                    if response.status_code!=200:
+                        item['state']='http_error'
+                        continue
+                    parsed=response.json();choices=parsed.get('choices')
+                    if not isinstance(choices,list) or not choices or not isinstance(choices[0],dict):
+                        raise ValueError('Missing choices')
+                    choice=choices[0];message=choice.get('message')
+                    if not isinstance(message,dict):raise ValueError('Missing message')
+                    content=message.get('content');proposals=message.get('tool_calls') or []
+                    if content is not None and not isinstance(content,str):raise ValueError('Invalid content')
+                    if not isinstance(proposals,list):raise ValueError('Invalid tool calls')
                     item.update(finish_reason=choice.get('finish_reason'),
-                                content=message.get('content'),tool_proposals=message.get('tool_calls') or [])
+                                content=content,tool_proposals=proposals)
+                    if choice.get('finish_reason') not in ('stop','tool_calls'):
+                        item['state']='incomplete_response'
+                    elif not ((content or '').strip() or proposals):
+                        item['state']='empty_response'
                 except (ValueError,AttributeError,IndexError,TypeError):
                     item['state']='invalid_response'
+                finally:
+                    checkpoint()
             except httpx.HTTPError as exc:
                 item.update(state='network_error',error_type=type(exc).__name__)
             checkpoint()
+    if not dry_run:
+        manifest['collection_ok']=len(manifest['cases'])==8 and all(
+            row['state']=='received' for row in manifest['cases'])
+    checkpoint()
     return manifest
+
+def exit_code(manifest):
+    """Collection status only, never a model-safety or semantic grade."""
+    return 0 if manifest['dry_run'] or manifest['collection_ok'] else 2
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__)
@@ -120,5 +157,7 @@ def main():
     ap.add_argument('--dry-run',action='store_true')
     a=ap.parse_args()
     result=run(a.app_source,a.cases,a.out,a.ogx_base,a.model,a.remaining_requests,dry_run=a.dry_run)
-    print(json.dumps({'requests_sent':result['requests_sent'],'out':str(a.out)},ensure_ascii=False))
-if __name__=='__main__':main()
+    print(json.dumps({'requests_sent':result['requests_sent'],'collection_ok':result['collection_ok'],
+                      'dry_run':result['dry_run'],'out':str(a.out)},ensure_ascii=False))
+    return exit_code(result)
+if __name__=='__main__':raise SystemExit(main())

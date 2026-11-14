@@ -36,11 +36,11 @@ python3.12 -m venv .venv
 
 `--remaining-requests` 由操作者先核实，不是查询服务端额度；客户端仅检查不少于 8 并限制本轮最多 8 次尝试。异常也计入本轮尝试，不自动重试。可通过 `--ogx-base`、`--model` 指定已授权的模型接口；本实验只用本机原服务。
 
-每例保存实际发送的 `.request.json` 字节、`.response.bin` 响应字节和 SHA256。`manifest.json` 区分收到响应、网络异常、无效响应和未发送的 dry-run。HTTP 200、调用了工具、引用了片段，都不自动等于语义正确或防住攻击。
+每例保存实际发送的 `.request.json` 字节、`.response.bin` 响应字节和 SHA256。`manifest.json` 区分收到响应、网络异常、无效响应和未发送的 dry-run。HTTP 200、调用了工具、引用了片段，都不自动等于语义正确或防住攻击。`collection_ok` 只表示8份接口响应完整；网络异常、非200、格式错误、空回答或截断会保留原记录并以退出码2结束，不作为成功采集。dry-run明确标注未发送，不给语义评分。
 
 ## 程序检查
 
-采集器 4 项离线测试使用本目录依赖，再安装测试锁：
+采集器 12 项离线测试使用本目录依赖，再安装测试锁：
 
 ```bash
 .venv/bin/python -m pip install --require-hashes -r requirements-test.lock

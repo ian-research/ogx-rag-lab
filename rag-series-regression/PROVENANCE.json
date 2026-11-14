@@ -6,5 +6,14 @@
   "new_runtime_service": false,
   "real_itsm": false,
   "scope": "existing-service walkthrough and offline saved-response consistency audit",
-  "private_evidence_in_source": false
+  "private_evidence_in_source": false,
+  "reliability_revision": "r2: fail closed on capture errors and incomplete HTTP/document snapshots",
+  "rhel_reliability_verification": {
+    "os": "RHEL 10.2",
+    "python": "3.12.15",
+    "combined_offline_tests": 26,
+    "recorded_response_replay": 8,
+    "new_model_requests": 0,
+    "shared_service_changes": false
+  }
 }

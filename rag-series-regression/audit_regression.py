@@ -7,6 +7,9 @@ response. It checks the snapshots and exact response fields that were saved.
 import argparse,hashlib,json
 from pathlib import Path
 
+DOC_SNAPSHOT_FIELDS={'status','policy_id','filename','version_label',
+                     'valid_from','valid_to','heading','excerpt_sha256'}
+
 def audit(data):
     log=data['http_log']
     def entry(kind):
@@ -18,6 +21,8 @@ def audit(data):
     canonical_text=payload['content_canonical'];canonical=json.loads(canonical_text)
     submit=entry('submit')['response'];duplicate=entry('submit-duplicate')['response']
     checks={}
+    checks['required_responses_ok']=all(entry(kind)['status']==200 for kind in (
+        'ask','revise','ticket','submit','submit-duplicate'))
     checks['v2_is_newer']=fresh['version']>ask['draft']['version']
     checks['old_confirmation_rejected']=entry('submit-old')['status']==409
     checks['ticket_pending_review']=ticket['status']==payload['ticket_status']=='pending_review'
@@ -30,8 +35,10 @@ def audit(data):
     checks['same_facts']=canonical['facts']==fresh['facts']
     checks['same_missing']=canonical['missing']==fresh['missing'] and payload['declared_missing']==[x['item'] for x in fresh['missing']]
     checks['same_basis']=canonical['basis']==fresh['basis']
-    projection={k:fresh['basis'].get(k) for k in payload['doc_snapshot']}
-    checks['same_document_snapshot']=projection==payload['doc_snapshot']
+    snapshot=payload.get('doc_snapshot')
+    checks['same_document_snapshot']=(isinstance(snapshot,dict)
+        and set(snapshot)==DOC_SNAPSHOT_FIELDS
+        and all(snapshot[k]==fresh['basis'].get(k) for k in DOC_SNAPSHOT_FIELDS))
     return {'checks':checks,'all_snapshot_checks_pass':all(checks.values()),
             'ticket_no':ticket['ticket_no'],'draft_id':fresh['draft_id'],
             'declared_missing':payload['declared_missing'],
@@ -44,7 +51,9 @@ def main():
     if a.out.exists():raise SystemExit('Refusing to overwrite audit output')
     raw=a.record.read_bytes();result=audit(json.loads(raw))
     result['input_file_sha256']=hashlib.sha256(raw).hexdigest()
-    a.out.write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
+    # Exclusive creation also protects against a second process using this path.
+    with a.out.open('x',encoding='utf-8') as handle:
+        handle.write(json.dumps(result,ensure_ascii=False,indent=2)+'\n')
     print(json.dumps(result,ensure_ascii=False,indent=2))
     raise SystemExit(0 if result['all_snapshot_checks_pass'] else 1)
 if __name__=='__main__':main()

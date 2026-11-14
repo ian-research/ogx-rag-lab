@@ -1,0 +1,10 @@
+{
+  "article": 9,
+  "baseline_commit": "7ee81f5268850e8e1fd2b9d994fa5b43b0ba6073",
+  "date": "2026-11-14",
+  "license": "Apache-2.0",
+  "new_runtime_service": false,
+  "real_itsm": false,
+  "scope": "existing-service walkthrough and offline saved-response consistency audit",
+  "private_evidence_in_source": false
+}

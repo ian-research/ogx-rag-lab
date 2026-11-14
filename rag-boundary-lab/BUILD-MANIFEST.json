@@ -1,0 +1,18 @@
+{
+  "algorithm": "SHA256",
+  "files": {
+    "LICENSE": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "LICENSE-UPSTREAM": "3f9c97f06ebd42940eac3b635ff03d278e5184f3b067a926e558206344a53e00",
+    "PROVENANCE.json": "84cfd980db5c39de52130c0db8a66e64847cc8b2e2e4378c11750642665e41f7",
+    "README.md": "2bce33c595b4b8d1b60d464ef158bc3c99792c2b2c715d70a0018ee0f7966c53",
+    "TESTING.md": "f076630621403fe69b24dbf13567991f0f653ee2002df3598547eeb5b42a10d0",
+    "cases.json": "cd439d32dc9ab7dfc418cf72db34e19d92189e2e3f72fe866cac95971a55057b",
+    "program_checks/test_current_contract.py": "64a736ef4629e9b4cac57941f292dd2373bc59230fee4419824f257dc02d50bd",
+    "requirements-test.in": "543a97dbbb696f6cc90304e2b2a3140e70ec7bb2b9545949c612578e789e0b39",
+    "requirements-test.lock": "67445081d37f3506c0c4a78701ce9a6d968221d398b6e6df6117b77d518ceed6",
+    "requirements.in": "84a869ce0ab453cbdb7dbf81622ea2bc4eaddcc182528fbaacba09365df9446d",
+    "requirements.lock": "eacbe4a7436f469dde515a2d9b5800223610e228be3c7eb733629d64b4ed8623",
+    "run_exposure.py": "5952fbb086ead548e82d9d5c68dbff38023aa59610a63488c098368405938051",
+    "tests/test_capture.py": "6f7566008084cbde4973b12eae51cf9fbecd541d36f673eddbfe470eba0c1724"
+  }
+}

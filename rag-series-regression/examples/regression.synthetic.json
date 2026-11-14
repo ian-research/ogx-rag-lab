@@ -1,0 +1,98 @@
+{
+  "http_log": [
+    {
+      "kind": "ask",
+      "response": {
+        "draft": {
+          "version": 1
+        }
+      },
+      "status": 200
+    },
+    {
+      "kind": "revise",
+      "response": {
+        "draft": {
+          "draft_id": "D1",
+          "version": 2,
+          "asset": {
+            "asset_id": "A1",
+            "model": "Demo"
+          },
+          "reason": "电池故障",
+          "facts": [
+            {
+              "label": "资产编号",
+              "value": "A1"
+            }
+          ],
+          "basis": {
+            "status": "not_retrieved",
+            "sources": []
+          },
+          "missing": [
+            {
+              "item": "维修报价",
+              "status": "未知"
+            }
+          ],
+          "content_hash": "b4d69222e10777103870316c158479dfad0d380de3596a29744ad65d64a935fb"
+        }
+      },
+      "status": 200
+    },
+    {
+      "kind": "ticket",
+      "response": {
+        "ticket": {
+          "ticket_no": "T1",
+          "asset_id": "A1",
+          "reason": "电池故障",
+          "status": "pending_review",
+          "payload": {
+            "content_canonical": "{\"asset\":{\"asset_id\":\"A1\",\"model\":\"Demo\"},\"basis\":{\"sources\":[],\"status\":\"not_retrieved\"},\"draft_id\":\"D1\",\"facts\":[{\"label\":\"资产编号\",\"value\":\"A1\"}],\"missing\":[{\"item\":\"维修报价\",\"status\":\"未知\"}],\"reason\":\"电池故障\",\"user_id\":\"demo-a@example.invalid\",\"version\":2}",
+            "content_hash": "b4d69222e10777103870316c158479dfad0d380de3596a29744ad65d64a935fb",
+            "draft_ref": "D1",
+            "version": 2,
+            "submitted_by": "demo-a@example.invalid",
+            "asset_id": "A1",
+            "reason_text": "电池故障",
+            "declared_missing": [
+              "维修报价"
+            ],
+            "doc_snapshot": {
+              "status": "not_retrieved"
+            },
+            "ticket_status": "pending_review"
+          }
+        }
+      },
+      "status": 200
+    },
+    {
+      "kind": "submit",
+      "response": {
+        "ticket_no": "T1"
+      },
+      "status": 200
+    },
+    {
+      "kind": "submit-duplicate",
+      "response": {
+        "ticket_no": "T1"
+      },
+      "status": 200
+    },
+    {
+      "kind": "submit-old",
+      "response": {
+        "detail": "stale"
+      },
+      "status": 409
+    }
+  ],
+  "_meta": {
+    "synthetic": true,
+    "description": "Minimal offline teaching example; not a server result"
+  }
+}

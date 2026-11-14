@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>换新申请 · 待审核</title>
+<style>
+  :root { --ink:#1f2d3d; --muted:#5b6b7c; --line:#dfe6ee; --bg:#f5f7fa; --green:#0f766e; --blue:#1d4ed8; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.6 -apple-system,"PingFang SC","Microsoft YaHei",sans-serif; }
+  main { max-width:860px; margin:0 auto; padding:32px 20px 64px; }
+  h1 { font-size:24px; margin:0 0 6px; }
+  .sub { color:var(--muted); margin:0 0 22px; }
+  .quote { background:#f5f7f6; border-left:3px solid #0f6b52; padding:10px 12px;
+           margin:8px 0 0; color:#374151; font-size:13px; line-height:1.7; }
+  #excerptcard { margin-top:14px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:10px; padding:18px 20px; margin-bottom:16px; }
+  .card h2 { font-size:16px; margin:0 0 12px; }
+  label { display:block; font-size:13px; color:var(--muted); margin:10px 0 4px; }
+  input[type=text], textarea { width:100%; padding:9px 11px; border:1px solid var(--line); border-radius:7px; font:inherit; background:#fbfcfe; }
+  textarea { min-height:74px; resize:vertical; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:12px; }
+  button { border:1px solid var(--green); background:var(--green); color:#fff; padding:8px 16px; border-radius:7px; font:inherit; cursor:pointer; }
+  button.ghost { background:#fff; color:var(--green); }
+  button.warn { border-color:#b45309; background:#fff; color:#b45309; }
+  button:disabled { opacity:.5; cursor:default; }
+  table { width:100%; border-collapse:collapse; font-size:14px; }
+  th, td { text-align:left; padding:7px 8px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { width:120px; color:var(--muted); font-weight:500; }
+  .tag { display:inline-block; padding:1px 8px; border-radius:999px; font-size:12px; background:#e6f4f1; color:var(--green); }
+  .tag.warn { background:#fef3c7; color:#92400e; }
+  .meta { color:var(--muted); font-size:12px; margin-top:10px; word-break:break-all; }
+  pre { background:#f8fafc; border:1px solid var(--line); border-radius:8px; padding:10px; overflow:auto; font-size:12px; }
+  details { margin-top:8px; }
+  summary { cursor:pointer; color:var(--muted); }
+  .hint { color:var(--muted); font-size:13px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>换新申请 · 待审核</h1>
+  <p class="sub">查询本人设备与文档，整理一份申请草稿；只有你在页面上确认后，才会创建一张待审核申请。</p>
+
+  <section class="card">
+    <h2>当前会话</h2>
+    <div id="login">
+      <label for="credential">实验凭据（由管理员单独提供）</label>
+      <input id="credential" type="text" placeholder="粘贴你自己的实验凭据" autocomplete="off">
+      <div class="row"><button id="connect">连接</button><span id="loginmsg" class="hint"></span></div>
+    </div>
+    <div id="connected" hidden>
+      <div><span id="identity"></span> <button id="logout" class="ghost">退出</button></div>
+      <p class="hint">会话已连接，页面不会列出其他人的凭据或草稿。</p>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>提出问题</h2>
+    <label for="asof">文档适用日期</label>
+    <input id="asof" type="text" value="2026-03-01" style="max-width:180px">
+    <p class="hint">这个日期只用于选择文档版本，不是提交时间。</p>
+    <label for="question">问题</label>
+    <textarea id="question" placeholder="例如：我想申请更换笔记本，帮我准备一下"></textarea>
+    <div class="row"><button id="send">查询</button><span id="status" class="hint"></span></div>
+  </section>
+
+  <section class="card" id="answercard">
+    <h2>回答</h2>
+    <div id="answer" class="hint">尚未查询</div>
+  </section>
+
+  <section class="card" id="draftcard" hidden>
+    <h2>申请草稿 <span id="drafttag" class="tag">等待确认</span></h2>
+    <table id="drafttable"></table>
+    <div id="excerptcard" class="sub" hidden>
+      <div class="label">检索到的条款摘录</div>
+      <p id="excerpt" class="quote"></p>
+    </div>
+    <div class="row">
+      <button id="confirm">确认提交</button>
+      <button id="revise" class="ghost">修改理由</button>
+      <button id="cancel" class="warn">取消</button>
+    </div>
+    <div class="row" id="revisewrap" hidden>
+      <textarea id="reason" style="min-height:64px"></textarea>
+      <button id="savereason" class="ghost">保存并重新预览</button>
+    </div>
+    <p class="hint" id="drafthint"></p>
+    <p class="meta" id="draftmeta"></p>
+  </section>
+
+  <section class="card" id="resultcard" hidden>
+    <h2>提交结果</h2>
+    <div id="result"></div>
+    <div class="row"><button id="recheck" class="ghost">按同一标识回查</button></div>
+  </section>
+
+  <section class="card">
+    <h2>我的申请</h2>
+    <div class="row"><button id="list" class="ghost">刷新列表</button></div>
+    <div id="tickets" class="hint">尚未查询</div>
+  </section>
+
+  <section class="card">
+    <h2>调用过程</h2>
+    <p class="hint">展开查看实际工具参数、返回记录和运行编号。</p>
+    <div id="steps" class="hint">尚未查询</div>
+  </section>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+let token = null, current = null, lastIdem = null;
+
+function setStatus(text) { $('status').textContent = text || ''; }
+async function api(path, options = {}) {
+  const headers = Object.assign({}, options.headers || {});
+  if (token) headers['Authorization'] = 'Bearer ' + token;
+  if (options.body) headers['Content-Type'] = 'application/json';
+  const response = await fetch(path, Object.assign({}, options, { headers }));
+  const data = await response.json().catch(() => ({}));
+  if (!response.ok) throw new Error(data.detail || data.message || ('HTTP ' + response.status));
+  return data;
+}
+
+$('connect').onclick = async () => {
+  token = $('credential').value.trim();
+  if (!token) { $('loginmsg').textContent = '请先粘贴凭据'; return; }
+  try {
+    const data = await api('/api/connect', { method: 'POST' });
+    $('login').hidden = true; $('connected').hidden = false;
+    $('identity').textContent = data.label;
+    $('credential').value = '';
+  } catch (error) { $('loginmsg').textContent = error.message; token = null; }
+};
+$('logout').onclick = () => { token = null; $('login').hidden = false; $('connected').hidden = true; };
+
+$('send').onclick = async () => {
+  const question = $('question').value.trim();
+  if (!question) { setStatus('请输入问题'); return; }
+  setStatus('查询中…'); $('draftcard').hidden = true; $('resultcard').hidden = true;
+  try {
+    const data = await api('/api/ask', { method: 'POST', body: JSON.stringify({ question, as_of: $('asof').value.trim() }) });
+    $('answer').textContent = data.answer || '(无内容)';
+    $('steps').innerHTML = (data.steps || []).map(s => `<details><summary>${s.kind} · ${s.name || s.finish_reason || ''} · ${s.ms ?? '—'} ms</summary><pre>${escapeHtml(JSON.stringify(s, null, 1))}</pre></details>`).join('') || '无';
+    if (data.kind === 'draft') { current = data.draft; renderDraft(current); }
+    setStatus('查询流程完成');
+  } catch (error) { setStatus('未完成：' + error.message); }
+};
+
+function escapeHtml(text) { return String(text).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c])); }
+
+function renderDraft(draft) {
+  const rows = [
+    ['申请人', '当前会话身份（服务端确定）'],
+    ['资产', `${draft.asset.asset_id} · ${draft.asset.model}`],
+    ['购买日期', draft.asset.purchase_date || '未记录'],
+    ['领用日期', '台账未提供（实际使用时长未知）'],
+    ['理由', draft.reason_source === 'user'
+      ? `${draft.reason}（用户提供，待审核；可在下方修改）`
+      : `${draft.reason}（通用描述；如您说明了具体原因，请在此修改）`],
+    ['文档依据', draft.basis.status === 'retrieved'
+      ? `${draft.basis.filename || '—'} ${draft.basis.version_label || ''}｜生效 ${draft.basis.valid_from || '—'}｜失效 ${draft.basis.valid_to_text}`
+      : '本次未检索到可引用条款'],
+    ['适用条件', draft.basis.condition
+      || (draft.basis.status === 'retrieved'
+          ? '以检索到的条款原文为准（见下方摘录），本次未给出可判定条件的结论'
+          : '未检索到条款，不能据此判断条件')],
+    ['缺项', draft.missing.map(m => `${m.item}：${m.status}（${m.why}）`).join('；')],
+    ['提交含义', draft.meaning],
+  ];
+  $('drafttable').innerHTML = rows.map(([k, v]) => `<tr><th>${k}</th><td>${escapeHtml(v)}</td></tr>`).join('');
+  const excerpt = draft.basis.status === 'retrieved' ? (draft.basis.excerpt || draft.basis.citation || '') : '';
+  $('excerpt').textContent = excerpt;
+  $('excerptcard').hidden = !excerpt;
+  $('drafthint').textContent = '请核对上面的内容；确认后才会创建待审核申请，修改后需要重新确认。';
+  $('draftmeta').textContent = `草稿 ${draft.draft_id} · 版本 ${draft.version} · 内容哈希 ${draft.content_hash.slice(0, 16)}… · 过期时间 ${draft.expires_at}`;
+  $('draftcard').hidden = false;
+  $('drafttag').textContent = ({submitted: '已提交', submitting: '提交中',
+      submitted_unknown: '结果待核对', cancelled: '已取消'})[draft.status] || '等待确认';
+  $('resultcard').hidden = true;
+}
+
+$('confirm').onclick = async () => {
+  if (!current) return;
+  try {
+    const confirmation = await api(`/api/drafts/${current.draft_id}/confirm`, {
+      method: 'POST', body: JSON.stringify({ version: current.version, content_hash: current.content_hash }) });
+    const result = await api(`/api/drafts/${current.draft_id}/submit`, {
+      method: 'POST', body: JSON.stringify({ confirmation_id: confirmation.confirmation_id }) });
+    lastIdem = result.idem_key || null;
+    showResult(result);
+  } catch (error) { showResult({ status: 'error', message: error.message }); }
+};
+
+$('cancel').onclick = async () => {
+  if (!current) return;
+  try { const data = await api(`/api/drafts/${current.draft_id}/cancel`, { method: 'POST' });
+    current = data.draft; renderDraft(current);
+    $('drafttag').textContent = '已取消'; $('drafthint').textContent = '草稿已取消，未创建任何申请。';
+  } catch (error) { $('drafthint').textContent = error.message; }
+};
+
+$('revise').onclick = () => { $('revisewrap').hidden = !$('revisewrap').hidden; $('reason').value = current ? current.reason : ''; };
+$('savereason').onclick = async () => {
+  if (!current) return;
+  try { const data = await api(`/api/drafts/${current.draft_id}/revise`, {
+      method: 'POST', body: JSON.stringify({ reason: $('reason').value }) });
+    current = data.draft; renderDraft(current); $('revisewrap').hidden = true;
+    $('drafthint').textContent = data.note;
+  } catch (error) { $('drafthint').textContent = error.message; }
+};
+
+function showResult(data) {
+  $('resultcard').hidden = false;
+  if (data.status === 'submitted') {
+    $('result').innerHTML = `<p><span class="tag">待审核</span> 已创建申请 <strong>${escapeHtml(data.ticket_no)}</strong></p>
+      <p class="hint">${escapeHtml(data.message || '')}</p>`;
+  } else if (data.status === 'needs_recheck') {
+    $('result').innerHTML = `<p><span class="tag warn">结果待核对</span> ${escapeHtml(data.message || '')}</p>
+      <p class="meta">提交标识 ${escapeHtml(data.idem_key || '')}</p>`;
+  } else {
+    $('result').innerHTML = `<p><span class="tag warn">未完成</span> ${escapeHtml(data.message || data.status || '')}</p>`;
+  }
+}
+
+$('recheck').onclick = async () => {
+  if (!lastIdem) return;
+  try { const data = await api(`/api/submissions/${lastIdem}/reconcile`, { method: 'POST' });
+    showResult({ status: data.status === 'submitted' ? 'submitted' : 'needs_recheck',
+                 ticket_no: data.ticket_no, idem_key: lastIdem,
+                 message: data.message || '回查完成' });
+  } catch (error) { showResult({ status: 'error', message: error.message }); }
+};
+
+$('list').onclick = async () => {
+  try { const data = await api('/api/tickets');
+    $('tickets').innerHTML = data.items.length
+      ? data.items.map(t => `<div>${t.ticket_no} · ${t.status} · ${t.created_at}</div>`).join('')
+      : '没有申请记录';
+  } catch (error) { $('tickets').textContent = error.message; }
+};
+</script>
+</body>
+</html>

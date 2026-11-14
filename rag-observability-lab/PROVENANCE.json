@@ -1,0 +1,52 @@
+{
+  "business_baseline": {
+    "repository": "https://github.com/ian-research/ogx-rag-lab",
+    "commit": "2c227bc5e84145b036162bb46f57ff9385ac0b70",
+    "directory": "rag-action-lab"
+  },
+  "verified_lab_material": {
+    "date": "2026-11-14",
+    "source_files": 49,
+    "build_manifest_sha256": "e1104d1cdea7a358d85b39c67c82816af086ee046def368d46764d7d3e02279a"
+  },
+  "upstream": {
+    "repository": "https://github.com/rh-ai-quickstart/it-self-service-agent",
+    "commit": "7fc221dc7991a3d51432af4202fff6dae94b8d93",
+    "path": "mock-employee-data/src/mock_employee_data/data.py",
+    "records": 14,
+    "license_file": "LICENSE-UPSTREAM"
+  },
+  "validation": {
+    "server": "RHEL 10.2 / Python 3.12.15",
+    "pytest": {
+      "passed": 74,
+      "warnings": 19
+    },
+    "model_batch": "e06r2-20261113T110927Z",
+    "model_batch_script_checks": 9,
+    "collection_switch_batch": "e07-20261113T111642Z",
+    "later_no_model_checks": [
+      "own 200/200, cross 404/404",
+      "confirm 200, revise 200, stale submit 409, no ticket"
+    ]
+  },
+  "publication_changes": [
+    "Added deployment/testing/source documentation and license notices.",
+    "Constrained source manifest to allowlisted source paths; exclude virtual environments and generated/private files.",
+    "Source package includes both no-model check helpers and publication documentation."
+  ],
+  "business_runtime_changes_after_verified_lab": [],
+  "not_included": [
+    "private credentials",
+    "database and run state",
+    "raw experiment traces and logs",
+    "model weights",
+    "WeChat article draft"
+  ],
+  "not_verified": [
+    "fresh OS full installation",
+    "machine reboot for new services",
+    "concurrency/load stress",
+    "real ITSM or approval integration"
+  ]
+}

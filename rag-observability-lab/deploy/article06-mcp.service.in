@@ -1,0 +1,17 @@
+[Unit]
+Description=Article 6 lab: simulated back office with tracing (loopback only)
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=@APP_DIR@
+EnvironmentFile=@CONFIG_PATH@
+Environment=OTEL_SERVICE_NAME=action-lab-mcp
+ExecStart=@APP_DIR@/.venv/bin/python -m uvicorn mcp_action_server:app --host 127.0.0.1 --port 8095 --workers 1 --no-access-log
+Restart=on-failure
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -2,11 +2,13 @@
 
 在 AWS RHEL 10 与单张 L40S 上搭建标准 RAG：vLLM 提供本地生成，OGX 接入 CPU Embedding 和 pgvector，自建上传应用完成 PDF、DOCX、Markdown、TXT 的后台解析、分块、入库及带来源问答。
 
-这是单机实验，服务只监听本机，通过 SSH 隧道访问。基础 RAG 未接登录或文档 ACL；第二阶段增加文档发布、有效期与适用范围管理，第四阶段另建带演示会话的只读 MCP 查询应用，第五阶段增加页面确认后提交的模拟换新申请，尚未接企业 SSO 或做生产负载压测。
+这是单机实验，服务只监听本机，通过 SSH 隧道访问。基础 RAG 未接登录或文档 ACL；第二阶段增加文档发布、有效期与适用范围管理，第四阶段另建带演示会话的只读 MCP 查询应用，第五阶段增加页面确认后提交的模拟换新申请，第六阶段为应用与 MCP 增加追踪、指标和关联日志。尚未接企业 SSO 或做生产负载压测。
 
 ![部署架构](figures/architecture.png)
 
 ## 从这里开始
+
+- [第六篇：追踪问答和申请流程](rag-observability-lab/README.md)：OpenTelemetry、Jaeger、关联日志与指标端点；包含独立部署、两份哈希锁、74 项程序测试及两项不调模型的在线补验。
 
 - [第五篇：确认后提交换新申请](rag-action-lab/README.md)：草稿预览、明确确认、MCP 模拟写入、幂等与中断恢复；包含完整部署配置、锁文件和 58 项程序测试。
 
@@ -36,6 +38,7 @@ git rev-parse HEAD
 
 |目录|内容|
 |---|---|
+|rag-observability-lab/|应用/MCP 追踪、Jaeger 托管、指标与日志、独立部署和定向补验|
 |rag-action-lab/|草稿、页面确认、模拟工单 MCP、持久状态及部署与恢复测试|
 |rag-mcp-lab/|只读 MCP、Web 查询、应用侧工具循环、部署脚本和测试|
 |rag-eval-lab/|30题评测、五份实验文档、操作手册与实际诊断记录|
@@ -68,4 +71,4 @@ git rev-parse HEAD
 
 参考 [Red Hat AI Quickstarts RAG](https://github.com/rh-ai-quickstart/RAG)，并非其 Compose 原样部署；本仓库不含 OGX 或上游 RAG 的源码副本。
 
-第四、第五篇部分设备数据与场景参考 [Red Hat IT Self Service Agent](https://github.com/rh-ai-quickstart/it-self-service-agent/tree/7fc221dc7991a3d51432af4202fff6dae94b8d93)，上游 MIT 声明随代码保留；新增代码继续采用 Apache-2.0。
+第四至第六篇部分设备数据与场景参考 [Red Hat IT Self Service Agent](https://github.com/rh-ai-quickstart/it-self-service-agent/tree/7fc221dc7991a3d51432af4202fff6dae94b8d93)，上游 MIT 声明随代码保留；新增代码继续采用 Apache-2.0。

@@ -1,0 +1,15 @@
+[Unit]
+Description=Article 6 lab: Jaeger with in-memory storage (loopback only)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/podman run --rm --name article06-jaeger --pull=never -p 127.0.0.1:16686:16686 -p 127.0.0.1:4317:4317 -p 127.0.0.1:4318:4318 @JAEGER_IMAGE@
+ExecStop=/usr/bin/podman stop -t 10 article06-jaeger
+Restart=on-failure
+RestartSec=3
+TimeoutStartSec=120
+
+[Install]
+WantedBy=multi-user.target

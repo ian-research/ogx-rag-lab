@@ -1,0 +1,18 @@
+[Unit]
+Description=Article 6 lab: action API with tracing (loopback only)
+After=network-online.target
+Wants=article06-mcp.service
+
+[Service]
+Type=simple
+WorkingDirectory=@APP_DIR@
+EnvironmentFile=@CONFIG_PATH@
+Environment=OTEL_SERVICE_NAME=action-lab-api
+ExecStart=@APP_DIR@/.venv/bin/python -m uvicorn action_api:app --host 127.0.0.1 --port 8094 --workers 1 --no-access-log
+Restart=on-failure
+UMask=0077
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,95 @@
+Deployment (article 6, r2)
+==========================
+
+Assumptions: RHEL 10.x, Python 3.12, root, Podman and systemd; ports
+8094/8095/16686/4317/4318 free. The OGX and version services from earlier
+articles must already be running on 8321 and 8089. Run the following commands
+from this source directory, on the server. This adds the article-6 instances;
+it is not a fresh-machine installation of the earlier articles.
+
+1. Image
+   podman pull docker.io/jaegertracing/jaeger:2.23.0
+   podman image inspect docker.io/jaegertracing/jaeger:2.23.0 --format '{{.Id}}'
+   The installer refuses to run unless the id is
+   d8dac2a2526477f12f21f193e656347afb88ea58ff76a95f9b1c7fbb8966dbf1.
+   The tag is recorded for humans; the id check is what pins the build.
+
+2. Runtime virtual environment
+   python3.12 -m venv .venv
+   .venv/bin/pip install --require-hashes -r requirements-otel.lock
+   .venv/bin/pip check
+
+3. State directory (needed before the first install)
+   STATE_DIR=/root/rag-lab/article06-state
+   install -d -m 700 "$STATE_DIR" "$STATE_DIR/private" "$STATE_DIR/data"
+   STATE_DIR=$STATE_DIR PRIVATE_DIR=$STATE_DIR/private DATA_DIR=$STATE_DIR/data \
+     .venv/bin/python init_private.py
+   chmod 600 "$STATE_DIR"/private/*
+   init_private.py writes sessions.json, action.key and
+   credentials-for-delivery.json. Keep that last file private and provide each
+   operator only their own lab credential through your agreed private channel;
+   never paste it into a chat or commit it. Do not run init_private.py again
+   against an existing nonempty private directory; it refuses to overwrite.
+   The installer refuses to start when
+   "$STATE_DIR/private/sessions.json" is missing.
+
+4. Install (first time, or again after rollback)
+   scripts/selftest_install06.sh     # isolated contract checks, no real services
+   scripts/install06.sh
+   It renders /etc/rag-lab/article06-runtime.env (0640, etc_t), renders and
+   verifies the three units, starts Jaeger, the ticket service and the API, and
+   waits for each health endpoint. On any failure it removes only what this run
+   created; the state directory and the image are untouched. If the config
+   already exists it is adopted only when it is complete and points at the same
+   STATE_DIR; the file is never rewritten or appended to.
+
+   Existing units: the installer refuses to run if any of the three units is
+   already present. For an in-place upgrade, stop the three services and run
+   ARTICLE06_REPLACE=1 scripts/install06.sh. Replacement first copies the units,
+   the configuration and each unit's enabled/active state into
+   "$STATE_DIR/install-backup-<UTC>"; if anything fails it restores the files,
+   runs daemon-reload and then re-applies the recorded enabled/active state.
+   That is the only path that overwrites units, and it is never implicit.
+
+   The Jaeger unit starts the verified image by ID (sha256:...), not by tag, so
+   a later tag move cannot change what the service runs.
+
+5. Tests
+   python3.12 -m venv .venv-test
+   .venv-test/bin/pip install --require-hashes \
+     -r requirements-otel.lock -r requirements-test.lock
+   .venv-test/bin/pip check
+   MCP_TEST_PORT=18095 .venv-test/bin/python -m pytest tests -q
+   Install BOTH locks into the separate test environment: the test lock alone
+   does not include opentelemetry-sdk and its exporter. It adds pytest and
+   prometheus-client (used by the standard metrics parse in scripts/e06r2.py).
+   MCP_TEST_PORT matters: the protocol tests start their own instance and must
+   not collide with the running 8095.
+
+6. End-to-end checks
+   .venv-test/bin/python scripts/e06r2.py # E1-E6, L1, M1; needs standard parser
+   .venv/bin/python scripts/e07_collect.py  # collection on/off, exploratory
+   These scripts target the default article-6 server paths and ports shown
+   above. They perform fault injection and create simulated tickets on the
+   dedicated instances. Run them only in this lab, not against shared services.
+   Read the result files under STATE_DIR/evidence; the scripts' exit status
+   alone is not an assertion that all individual checks passed.
+
+7. Stop / roll back
+   scripts/rollback06.sh            # units removed, config and state kept
+   scripts/rollback06.sh --purge    # also removes the config file
+   Re-running install06.sh afterwards adopts the kept config.
+
+8. Operating notes
+   * In-memory Jaeger: export first (the E6 check does), then stop it.
+     Previously stored traces are lost when its in-memory backend restarts.
+     The application's batch processor has a bounded in-memory queue; exporter
+     retries and that queue do not guarantee complete delivery after an outage.
+   * OTEL_ENABLED=0 skips installing the SDK/exporter in a fresh process.
+     The application's tracing calls remain, using the default no-op provider.
+     Changing the variable requires restarting that dedicated process.
+   * The on/off check uses five valid requests per setting, with warm-up kept
+     separate. It checks business validity and trace presence; these samples
+     do not establish the tracing overhead, a speedup or statistical equivalence.
+   * service.version is set from OTEL_SERVICE_VERSION so a trace can be tied to
+     the code revision that produced it.

@@ -1,0 +1,6 @@
+# Apply as a merge patch to the existing OdhDashboardConfig, if needed.
+# The native input/output guardrails switches are not required by this deployment.
+spec:
+  dashboardConfig:
+    genAiStudio: true
+    aiAssetCustomEndpoints: true

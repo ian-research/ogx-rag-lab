@@ -1,0 +1,10 @@
+{
+  "playground_namespace": "llm",
+  "nemo_namespace": "nemo-guardrails-demo",
+  "nemo_name": "nemo-regex",
+  "ogx_name": "lsd-genai-playground",
+  "maas_base_url": "http://maas.apps.REPLACE_CLUSTER_DOMAIN/llm/tinyllama-1-1b-chat-v1-0/v1",
+  "model_id": "tinyllama-1.1b-chat-v1.0",
+  "maas_ca_file": "",
+  "response_language": "zh-CN"
+}

@@ -1,0 +1,116 @@
+OpenShift AI 3.5.3 NeMo Guardrails 离线复现部署包
+版本 1.3    更新日期 2026-11-24
+
+适用前提
+目标集群已安装 OpenShift AI 3.5.3，已有可用的 MaaS/TinyLlama。
+平台需要准备 TrustyAI、OGX、NeMo、认证代理、初始化容器和 Playground 数据库的离线镜像。
+本包包含部署手册、YAML、规则源码和验证脚本；不包含容器镜像、模型权重或真实凭据。
+
+简体手册：离线部署手册.docx / 离线部署手册.html。
+台湾繁体手册：離線部署手冊.zh-TW.docx / 離線部署手冊.zh-TW.html。
+台湾繁体速查：START.zh-TW.txt。
+HTML 为离线自包含页面，可在浏览器中打开并复制命令，没有外部字体或脚本依赖。
+
+在已登录目标集群的 Linux 或 macOS 管理终端执行，始终位于本包根目录。
+以下命令可用于 Bash 或 zsh。
+需要 oc 与 Python 3.9+；本包脚本只使用标准库，不需要 pip install。
+
+所有操作共用的初始化
+新解压的包不含 settings.json。首次安装、续期和恢复入口都要先完成这些准备。
+升级部署包时解压到新目录，保留原 settings.json 和 private/，不要覆盖已有凭据。
+1. oc whoami --show-server
+2. 校验交付文件（二选一，在编辑文件之前执行）：
+   Linux: sha256sum -c SHA256SUMS
+   macOS: shasum -a 256 -c SHA256SUMS
+3. 新目录中复制参数样例，-n 避免覆盖已有配置：
+   cp -n settings.example.json settings.json
+   若需台湾繁体提示，改用（两条命令二选一）：
+   cp -n settings.zh-TW.example.json settings.json
+4. 编辑 settings.json，填写当前部署实际使用的项目和资源名称。
+   response_language 为 zh-CN（简体，默认）或 zh-TW（台湾繁体）。
+   旧配置省略此字段仍使用简体。输入匹配均覆盖简体、繁体与英文的指定表达。
+   此设置只控制固定拦截提示；界面语言、终端诊断和模型回答不受其控制。
+   maas_base_url 是 MaaS 模型的完整 API 基址，包含模型路径并以 /v1 结尾。
+   不直接使用 MaaS 弹窗只显示的网关根地址；保留实际可用的 http/https 协议。
+   Playground 新增端点填写 NeMo HTTPS Service URL，与 maas_base_url 不同。
+   已有部署可按手册第 3 节读取规则 ConfigMap 中的 base_url 核对。
+5. python3 scripts/render.py
+6. python3 -m unittest discover -s tests -v
+   本版本共 41 个测试方法，58 条规则用例分别检查两种提示语言；不连接集群。
+
+首次部署顺序
+1. 完成手册里的平台组件、功能入口、镜像及网络前提。
+2. 完成上面的共用初始化。
+3. python3 scripts/cluster.py preflight
+4. python3 scripts/cluster.py install
+   按提示输入目标 MaaS API key，输入不显示。
+5. python3 scripts/cluster.py verify-service
+6. python3 scripts/cluster.py token --duration=720h
+   默认申请 30 天；终端显示集群实际签发的 UTC 和北京时间。
+7. 按手册第 5 节在 AI asset endpoints 创建 NeMo 自定义端点。
+   在同一项目的 Playground 选择 MaaS 和 NeMo 两个模型，均设置 Max tokens=128。
+   点击 Configure 创建后端；仅登记端点不会创建 OGXServer。
+8. python3 scripts/cluster.py wait-playground
+9. python3 scripts/cluster.py trust
+10. python3 scripts/cluster.py verify --token-file private/nemo-playground-token.txt
+11. 两个独立新聊天使用相同输入进行 MaaS 与 NeMo 对照验收。
+12. python3 scripts/cluster.py inventory
+
+规则入口
+rules/actions.py           共享匹配规则、简体与台湾繁体的原因及建议
+rules/demo_rules.co        命中规则后的输入检查流程
+rules/cases.json           58 条本地用例
+
+不要对整个 rendered 目录执行 oc apply -f rendered。
+目录包含单独的 merge patch 和未填写的 Secret 示例，必须按手册或脚本选择文件执行。
+install 用于首次部署；已有部署修改规则时，按手册的规则维护步骤执行。
+private/ 中的凭据和配置备份不属于交付物，不要转发。
+
+token 到期检查与更新（详见手册第 4.3、8.3 节）
+前提：新解压包先完成共用初始化。已有 NeMo 时不要运行 install。
+1. 查看最近保存的 token 实际到期时间：
+   cat private/nemo-playground-token-info.json
+   expirationTimestamp 是集群实际签发的 UTC 到期时间；expires_at_beijing 是北京时间。
+   720h 是申请时长，实际有效期由集群决定。
+2. 确认当前目标集群，再签发新 token：
+   oc whoami --show-server
+   python3 scripts/cluster.py token --duration=720h
+3. 在 AI asset endpoints 的原 Playground 项目中创建替代端点。
+   本版本自定义端点没有直接编辑 API key 的入口。
+   使用新的唯一显示名称，沿用原 NeMo URL 和模型 ID。
+   API key 填 private/nemo-playground-token.txt 的内容，不加 Bearer。
+4. Configure playground 中取消选择旧 NeMo 端点，选择新端点，保留 MaaS 模型。
+   将两个所选模型 Max tokens 均设为 128 后保存。
+5. python3 scripts/cluster.py wait-playground
+   python3 scripts/cluster.py trust
+   python3 scripts/cluster.py verify --token-file private/nemo-playground-token.txt
+6. 刷新页面、新建聊天、选择新端点，测试 NEMO_BLOCK_TEST 拦截及 Hello 放行。
+   确认成功且旧端点不再被使用后，才清理旧端点登记。
+
+新 token 不会自动替换 Playground 中的旧值，也不会延长或立即撤销旧 token。
+到期记录只对应本地最新 token，不代表 Playground 已完成更新。
+verify --token-file 使用指定文件中的 token；不带此选项才会另签 15 分钟临时 token。
+两种方式都不读取 Dashboard 保存的端点凭据，不能代替页面的新聊天验收。
+不要把此 token 写入 tinyllama-maas-api-key；它是另一条链路的 MaaS 凭据。
+更新 token 不需要重装 NeMo、删除规则或证书。
+
+已删除自定义端点或 Playground（详见手册第 8.4 节）
+1. 共用初始化后，确认原 NeMo、Service 和服务账号存在，运行 verify-service。
+2. 运行 token，按第 5 节重建 NeMo 端点；保留既有 MaaS 端点。
+3. 在原项目 Configure playground，两个模型的 Max tokens 均填 128。
+4. 按首次部署第 8—11 步等待就绪、配置 CA、验收凭据及页面效果。
+wait-playground 只检查 settings.json 指定项目中的 OGX，不改用其他项目的同名资源。
+Initializing 表示后端仍在创建；脚本最多等待 600 秒并检查 Deployment 实际就绪。
+服务仍存在时，此恢复过程不运行 install、不重建 NeMo、不替换上游 MaaS key。
+
+
+已有部署切换提示语言（手册第 8.5 节）
+1. 备份当前规则；在 settings.json 修改 response_language，保留其他参数。
+2. python3 scripts/render.py
+3. python3 -m unittest discover -s tests -v
+4. oc apply -f rendered/20-rules-configmap.yaml
+5. 等 Operator 更新 Pod 并加载规则后，运行 verify-service 和带 --token-file 的 verify。
+   两项验证均核对实际回复语言。确认后在 Playground 新建聊天复测。
+仅切换语言不需要重新 install、重建 Playground 或更新 token。
+规则维护以 rules/ 为源；不要直接修改生成 YAML 或容器内的文件。
+升级前保留原 settings.json、private/ 与自定义规则；先合并自定义改动再应用。

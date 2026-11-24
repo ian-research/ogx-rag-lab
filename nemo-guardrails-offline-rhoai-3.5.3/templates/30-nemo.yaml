@@ -1,0 +1,25 @@
+apiVersion: trustyai.opendatahub.io/v1alpha1
+kind: NemoGuardrails
+metadata:
+  name: @@NEMO_NAME@@
+  namespace: @@NEMO_NAMESPACE@@
+  labels:
+    app.kubernetes.io/part-of: nemo-offline-demo
+  annotations:
+    security.opendatahub.io/enable-auth: "true"
+spec:
+  replicas: 1
+  nemoConfigs:
+    - name: basic
+      configMaps:
+        - nemo-demo-rules-config
+  env:
+    - name: MAAS_API_KEY
+      valueFrom:
+        secretKeyRef:
+          name: tinyllama-maas-api-key
+          key: token
+    - name: HF_HUB_OFFLINE
+      value: "1"
+    - name: TRANSFORMERS_OFFLINE
+      value: "1"

@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nemo-service-ca
+  namespace: @@PLAYGROUND_NAMESPACE@@
+  labels:
+    ogx.io/watch: "true"
+  annotations:
+    service.beta.openshift.io/inject-cabundle: "true"

@@ -1,0 +1,7 @@
+# Apply as a merge patch to the existing DataScienceCluster, if needed.
+spec:
+  components:
+    trustyai:
+      managementState: Managed
+    llamastackoperator:
+      managementState: Managed

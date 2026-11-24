@@ -1,0 +1,39 @@
+版本 1.3 — 2026-11-24
+
+- 新增 response_language：zh-CN（預設）和 zh-TW（臺灣繁體）。舊參數檔案相容。
+- 固定提示使用臺灣用語，如“觸發規則”“金鑰”“存取權杖”“匯出客戶明細”。
+- 共享規則增加臺灣繁體輸入表達，保留已有簡體與英文匹配和全部規則編號。
+- 增加臺灣繁體設定樣例、速查與完整 Word/HTML 部署手冊。
+- 渲染時選擇提示語言，服務驗收同時檢查語言，避免舊設定導致誤判成功。
+- 41 個本機測試方法；58 條正反例均在兩種提示語言下檢查。
+- 保留 720h token 申請、實際到期記錄、Playground 驗證資訊更新及恢復步驟。
+- 保留 NeMo 主模型 max_tokens=64，Playground 兩個模型 Max tokens=128。
+
+升級時複用原 settings.json，按需新增 response_language，合併自定義規則後重新 render。
+已有服務按手冊第 8.5 節僅更新規則 ConfigMap；不需要因語言切換重新安裝。
+此版本完成本機測試與檔案檢查；仍須在目標叢集驗證新規則載入與實際頁面結果。
+
+版本 1.2 — 2026-11-24
+
+對部署手冊、速查步驟和指令碼做一致性核對，修正以下流程缺口：
+- 新解壓包缺少 settings.json 或 rendered/ 時，明確提示初始化和渲染步驟。
+- token 等不應用 YAML 的操作不再要求先生成 rendered/。
+- 新增 wait-playground，檢查指定專案的 OGX Ready 與 Deployment 就緒。
+- trust 在目標 Playground 存在並就緒之後才應用 CA；保留已有 TLS 設定。
+- verify 新增 --token-file，可驗證實際準備設定到端點的 token。
+- 修正介面驗收外層等待預算，保留安全的 HTTP 狀態診斷，不回傳顯示驗證資訊。
+- 介面檢查嚴格核對觸發規則集合，並報告無效 JSON 或缺少回答。
+- 手冊補齊 MaaS 完整模型基址、端點/Playground 重建順序和 macOS 校驗指令。
+- 保留預設申請 720h（30 天）token，以及 UTC/北京時間的實際到期記錄。
+- 本機測試擴充套件至 32 個方法，覆蓋 44 條規則輸入和部署/續期/恢復流程。
+
+此版本沒有修改業務攔截規則、模型 ID 樣例或 NeMo 主模型 max_tokens=64。
+目標 Playground 的兩條模型設定仍均使用 Max tokens=128。
+本機流程測試模擬叢集和 HTTP 返回；目標離線叢集仍須執行手冊驗收。
+
+升級方式：將新包解壓到新目錄，核對並複用原 settings.json，重新 render。
+不要覆蓋原 private/；不需要因升級本包而重新 install 已存在的 NeMo 服務。
+
+版本 1.1
+- token 預設申請有效期改為 720h，儲存實際 expirationTimestamp。
+- 增加使用替代端點更新 Playground 驗證資訊的步驟。

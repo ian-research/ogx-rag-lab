@@ -1,5 +1,7 @@
 # OGX RAG Lab
 
+仓库包含单机 RAG 系列实验，以及独立的 [OpenShift AI 3.5.3 NeMo Guardrails 部署包](nemo-guardrails-offline-rhoai-3.5.3/README.md)。后者在已有 MaaS / TinyLlama 前增加输入规则检查；请按各目录的环境前提与手册部署。下文架构图和 RHEL / L40S 基线属于单机 RAG 系列。
+
 在 AWS RHEL 10 与单张 L40S 上搭建标准 RAG：vLLM 提供本地生成，OGX 接入 CPU Embedding 和 pgvector，自建上传应用完成 PDF、DOCX、Markdown、TXT 的后台解析、分块、入库及带来源问答。
 
 这是单机实验，服务只监听本机，通过 SSH 隧道访问。基础 RAG 未接登录或文档 ACL；第二阶段增加文档发布、有效期与适用范围管理，第四阶段另建带演示会话的只读 MCP 查询应用，第五阶段增加页面确认后提交的模拟换新申请，第六阶段为应用与 MCP 增加追踪、指标和关联日志，第七阶段让程序整理观测证据，再由原模型解释；第八阶段检查受控注入与工具边界，第九阶段回查一次申请中保存的快照与执行记录。尚未接企业 SSO 或做生产负载压测。
@@ -7,6 +9,8 @@
 ![部署架构](figures/architecture.png)
 
 ## 从这里开始
+
+- [OpenShift AI + NeMo Guardrails 实践](nemo-guardrails-offline-rhoai-3.5.3/README.md)：独立 OpenShift AI 3.5.3 环境的 v1.3 部署包，含简体与台湾繁体手册、规则、模板及 41 个本地测试方法；58 条规则用例分别检查两种提示语言。
 
 - [第九篇：整合与回归](rag-series-regression/README.md)：现有服务的完整操作顺序、草稿与工单快照离线核对；包含合成示例与14项离线测试。
 
@@ -44,6 +48,7 @@ git rev-parse HEAD
 
 |目录|内容|
 |---|---|
+|nemo-guardrails-offline-rhoai-3.5.3/|独立 OpenShift AI 集群的 NeMo 输入护栏、离线部署配置、双语手册与测试|
 |rag-series-regression/|整合回归指南、保存响应的离线快照核对、合成示例与测试|
 |rag-boundary-lab/|受控工具返回注入、原合同单轮采集、字节摘要与程序检查|
 |rag-insight-lab/|只读运维分析、Prometheus、Jaeger MCP 适配、证据保存与模型解释|

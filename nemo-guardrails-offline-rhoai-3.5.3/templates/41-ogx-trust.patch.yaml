@@ -1,0 +1,8 @@
+# Merge patch for an existing OGXServer; not a standalone Kubernetes resource.
+# scripts/cluster.py trust preserves existing CA references before adding this one.
+spec:
+  tls:
+    trust:
+      caCertificates:
+        - name: nemo-service-ca
+          key: service-ca.crt
